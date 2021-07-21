@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -38,96 +39,126 @@ class _GSTHomePageState extends State<GSTHomePage> {
   double textSize = 20;
   double borderRadius = 8;
 
+  double initialValue = 0;
+  double gstRate = 0;
+
+  // To avoid calling setState in every GSTRateButton we use this
+  // r is the rate of the respective button
+  gstRateSetter(double r) {
+    setState(() {
+      gstRate = r;
+      print('$r GST Rate Button clicked');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the GSTHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: SingleChildScrollView(
-        // TODO: tap anywhere to dismiss keyboard
-        // SCS is added to avoid overflow error when keyboard is shown
-        child: Padding(
-          padding: EdgeInsets.all(padding),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Initial Value',
-                    style: TextStyle(
-                      fontSize: textSize,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    // We wrap TextField in expanded as TF needs bounded width
-                    // and row provides unbounded width
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                //  GST Rate segment
-                margin: EdgeInsets.only(top: padding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      // To enable tap anywhere to dismiss keyboard
+      // If we wrap this around body of Scaffold, it does not dismiss keyboard when we tap on some places
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the GSTHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
+        ),
+        body: SingleChildScrollView(
+          // SCS is added to avoid overflow error when keyboard is shown
+          child: Padding(
+            padding: EdgeInsets.all(padding),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'GST Rate',
-                          style: TextStyle(fontSize: textSize),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              suffix: Text('%'),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      // Contains the SCS with GST Rate Buttons
-                      padding: EdgeInsets.all(padding - 4),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.blue[300],
-                        ),
-                        borderRadius: BorderRadius.circular(borderRadius),
+                    Text(
+                      'Initial Value',
+                      style: TextStyle(
+                        fontSize: textSize,
                       ),
-                      child: SingleChildScrollView(
-                        // padding: EdgeInsets.all(padding - 6),
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            // SizedBox(width: 8),
-                            GSTRateButton(rate: '1%'),
-                            GSTRateButton(rate: '3%'),
-                            GSTRateButton(rate: '5%'),
-                            GSTRateButton(rate: '12%'),
-                            GSTRateButton(rate: '18%'),
-                            GSTRateButton(rate: '28%'),
-                          ],
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      // We wrap TextField in expanded as TF needs bounded width
+                      // and row provides unbounded width
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                Container(
+                  //  GST Rate segment
+                  margin: EdgeInsets.only(top: padding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'GST Rate',
+                            style: TextStyle(fontSize: textSize),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                suffix: Text('%'),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        // Contains the SCS with GST Rate Buttons
+                        padding: EdgeInsets.all(padding - 3.5),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(30, 118, 118, 128),
+                          borderRadius: BorderRadius.circular(borderRadius),
+                        ),
+                        child: SingleChildScrollView(
+                          // padding: EdgeInsets.all(padding - 6),
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              // SizedBox(width: 8),
+                              GSTRateButton(rate: '1%'),
+                              GSTRateButton(rate: '3%'),
+                              GSTRateButton(rate: '5%'),
+                              GSTRateButton(rate: '12%'),
+                              GSTRateButton(rate: '18%'),
+                              GSTRateButton(rate: '28%'),
+                            ],
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        child: Text(
+                          'rate',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        onPressed: null,
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                SingleChildScrollView(child: GSTOperatorTab()),
+              ],
+            ),
           ),
         ),
       ),
@@ -136,30 +167,162 @@ class _GSTHomePageState extends State<GSTHomePage> {
 }
 
 class GSTRateButton extends StatelessWidget {
+  // To create GST Rate buttons
   final String rate; // The rate to be displayed on the button
+  final Function onTap; // To set the GST rate value
 
-  GSTRateButton({this.rate}); // Constructor for the GST Rate Button
+  GSTRateButton({this.rate, this.onTap}); // Constructor for the GST Rate Button
   @override
   Widget build(BuildContext context) {
     return Container(
       // Width & height given to keep all boxes consistent
-      width: 60,
+      width: 70,
       height: 40,
       margin: EdgeInsets.only(right: 6),
       child: ElevatedButton(
         child: Text(
           rate,
-          style: TextStyle(color: Colors.white),
+          // style: TextStyle(color: Colors.black),
         ),
         style: ElevatedButton.styleFrom(
-          primary: Colors.blue[400],
+          primary: Colors.white,
+          onPrimary: Colors.amberAccent,
+          // onSurface: Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        onPressed: () {
-          print('$rate GST Rate Button clicked');
-        },
+        // style: ButtonStyle(
+        //   backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        // ),
+        onPressed: onTap,
+      ),
+    );
+  }
+}
+
+// GST Operator Tab
+class GSTOperatorTab extends StatefulWidget {
+  @override
+  _GSTOperatorTabState createState() => _GSTOperatorTabState();
+}
+
+class _GSTOperatorTabState extends State<GSTOperatorTab> {
+  int segmentedControlGroupValue = 0;
+  final Map<int, Widget> myTabs = {
+    0: Text("+ Add GST"),
+    1: Text("- Less GST"),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // Container is to enforce width
+      width: MediaQuery.of(context).size.width * 0.9,
+      // We have edited const double _kMinSegmentedControlHeight = 45.0; // default - 28.0 in the default files
+      child: CupertinoSlidingSegmentedControl(
+          groupValue: segmentedControlGroupValue,
+          // padding: EdgeInsets.all(4),
+          children: myTabs,
+          // i is the value of myTab{int}
+          onValueChanged: (i) {
+            setState(() {
+              segmentedControlGroupValue = i;
+            });
+          }),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int i = 0;
+
+  updatePage(int value) {
+    setState(() {
+      i = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        MyButton(
+          s: '10',
+          f: updatePage(10),
+        ),
+        MyButton(
+          s: '20',
+          f: updatePage(20),
+        ),
+      ],
+    );
+  }
+}
+
+class MyButton extends StatelessWidget {
+  final String s;
+  final Function f;
+
+  MyButton({this.s, this.f});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 70,
+      height: 40,
+      child: ElevatedButton(
+        child: Text(s),
+        onPressed: f,
+        style: ElevatedButton.styleFrom(
+          primary: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class MyApp1 extends StatelessWidget {
+  void foo() {
+    print("hello world");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: SizedBox.expand(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  onPrimary: Colors.amberAccent,
+                ),
+                onPressed: foo,
+                child: Text("Elevated Button 1"),
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                ),
+                onPressed: foo,
+                child: Text(
+                  "Elevated Button 2",
+                  style: TextStyle(color: Colors.amberAccent),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
