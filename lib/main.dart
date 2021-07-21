@@ -131,12 +131,32 @@ class _GSTHomePageState extends State<GSTHomePage> {
                           child: Row(
                             children: [
                               // SizedBox(width: 8),
-                              GSTRateButton(rate: '1%'),
-                              GSTRateButton(rate: '3%'),
-                              GSTRateButton(rate: '5%'),
-                              GSTRateButton(rate: '12%'),
-                              GSTRateButton(rate: '18%'),
-                              GSTRateButton(rate: '28%'),
+                              GSTRateButton(
+                                rate: '1%',
+                                onTap: () {
+                                  return gstRateSetter(1);
+                                },
+                              ),
+                              GSTRateButton(
+                                rate: '3%',
+                                onTap: () => gstRateSetter(3),
+                              ),
+                              GSTRateButton(
+                                rate: '5%',
+                                onTap: () => gstRateSetter(5),
+                              ),
+                              GSTRateButton(
+                                rate: '12%',
+                                onTap: () => gstRateSetter(12),
+                              ),
+                              GSTRateButton(
+                                rate: '18%',
+                                onTap: () => gstRateSetter(18),
+                              ),
+                              GSTRateButton(
+                                rate: '28%',
+                                onTap: () => gstRateSetter(28),
+                              ),
                             ],
                           ),
                         ),
@@ -177,16 +197,16 @@ class GSTRateButton extends StatelessWidget {
     return Container(
       // Width & height given to keep all boxes consistent
       width: 70,
-      height: 40,
+      height: 45,
       margin: EdgeInsets.only(right: 6),
       child: ElevatedButton(
         child: Text(
           rate,
-          // style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black),
         ),
         style: ElevatedButton.styleFrom(
           primary: Colors.white,
-          onPrimary: Colors.amberAccent,
+          onPrimary: Colors.grey[350],
           // onSurface: Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
