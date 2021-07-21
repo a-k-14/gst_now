@@ -40,14 +40,32 @@ class _GSTHomePageState extends State<GSTHomePage> {
   double borderRadius = 8;
 
   double initialValue = 0;
+  // To store the GST rate for calculations
   double gstRate = 0;
+  // To set the value in GST Rate text field on click of GST Rate Button
+  TextEditingController gstRateController = TextEditingController();
 
   // To avoid calling setState in every GSTRateButton we use this
   // r is the rate of the respective button
   gstRateSetter(double r) {
+    /*
+    We set this outside setState so that we can avoid rebuilds
+    Also, this works outside setState
+    We use TextEditingValue to get around the issue that cursor will be at the
+    beginning when we click the GST Rate Button and the set the value inside the
+    GST Rate TextField
+    */
+    // gstRateController.value = TextEditingValue(
+    //   text: r.toInt().toString(),
+    //   selection: TextSelection.fromPosition(
+    //     TextPosition(offset: r.toInt().toString().length),
+    //   ),
+    // );
+    print('$r GST Rate Button clicked');
+    gstRateController.text = r.toInt().toString();
+    print('controller value: ${gstRateController.text}');
     setState(() {
-      gstRate = r;
-      print('$r GST Rate Button clicked');
+      gstRate = double.parse(gstRateController.text);
     });
   }
 
@@ -108,6 +126,9 @@ class _GSTHomePageState extends State<GSTHomePage> {
                           SizedBox(width: 10),
                           Expanded(
                             child: TextField(
+                              // To set the value on click of GST Rate Button
+                              controller: gstRateController,
+
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 suffix: Text('%'),
@@ -166,6 +187,7 @@ class _GSTHomePageState extends State<GSTHomePage> {
                 ),
                 SizedBox(height: 10),
                 SingleChildScrollView(child: GSTOperatorTab()),
+                Text(gstRate.toString()),
               ],
             ),
           ),
