@@ -161,17 +161,6 @@ class _GSTHomePageState extends State<GSTHomePage> {
                           ),
                         ),
                       ),
-                      ElevatedButton(
-                        child: Text(
-                          'rate',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                        ),
-                        onPressed: null,
-                      )
                     ],
                   ),
                 ),
@@ -250,100 +239,6 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
               segmentedControlGroupValue = i;
             });
           }),
-    );
-  }
-}
-
-class Home extends StatefulWidget {
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  int i = 0;
-
-  updatePage(int value) {
-    setState(() {
-      i = value;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        MyButton(
-          s: '10',
-          f: updatePage(10),
-        ),
-        MyButton(
-          s: '20',
-          f: updatePage(20),
-        ),
-      ],
-    );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  final String s;
-  final Function f;
-
-  MyButton({this.s, this.f});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 70,
-      height: 40,
-      child: ElevatedButton(
-        child: Text(s),
-        onPressed: f,
-        style: ElevatedButton.styleFrom(
-          primary: Colors.white,
-        ),
-      ),
-    );
-  }
-}
-
-class MyApp1 extends StatelessWidget {
-  void foo() {
-    print("hello world");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: SizedBox.expand(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.white,
-                  onPrimary: Colors.amberAccent,
-                ),
-                onPressed: foo,
-                child: Text("Elevated Button 1"),
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                ),
-                onPressed: foo,
-                child: Text(
-                  "Elevated Button 2",
-                  style: TextStyle(color: Colors.amberAccent),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
