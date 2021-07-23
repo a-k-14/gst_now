@@ -1,5 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+
+/*
+NOTE:
+1. Initial Value - 12 digits incl decimal separator and 2 digits after decimal
+1. GST Rate - 8 digits incl decimal separator and 2 digits after decimal
+TODO: decimals precision - how many and option to set by user
+1. keyboard type in iOS and number validations in iOS
+2. Suffix %
+3. default rate
+4. edit rates and change the order
+*/
 
 void main() => runApp(MyApp());
 
@@ -19,13 +32,14 @@ class MyApp extends StatelessWidget {
 }
 
 class GSTHomePage extends StatefulWidget {
-  // This widget is the home page of your application.
+  // This widget is the home page of application.
 
   // This class is the configuration for the state. It holds the values (in this
   // case the title) provided by the parent (in this case the MyApp widget) and
   // used by the build method of the State.
   // Fields in a Widget subclass are always marked "final".
 
+  // Title on App Bar
   final String title;
 
   GSTHomePage({this.title});
@@ -39,39 +53,57 @@ class _GSTHomePageState extends State<GSTHomePage> {
   double textSize = 20;
   double borderRadius = 8;
 
-  double initialValue = 0;
-  // To store the GST rate for calculations
-  double gstRate = 0;
   // To set the value in GST Rate text field on click of GST Rate Button
   TextEditingController gstRateController = TextEditingController();
 
-  // To avoid calling setState in every GSTRateButton we use this
-  // r is the rate of the respective button
-  gstRateSetter(double r) {
-    /*
-    We set this outside setState so that we can avoid rebuilds
-    Also, this works outside setState
-    We use TextEditingValue to get around the issue that cursor will be at the
-    beginning when we click the GST Rate Button and the set the value inside the
-    GST Rate TextField
-    */
-    // gstRateController.value = TextEditingValue(
-    //   text: r.toInt().toString(),
-    //   selection: TextSelection.fromPosition(
-    //     TextPosition(offset: r.toInt().toString().length),
-    //   ),
-    // );
-    print('$r GST Rate Button clicked');
-    gstRateController.text = r.toInt().toString();
-    print('controller value: ${gstRateController.text}');
-    setState(() {
-      gstRate = double.parse(gstRateController.text);
+  double initialValue = 0;
+  // To store the GST rate for calculations
+  // double gstRate = 0;
+
+  @override
+  void initState() {
+    // This is used to make sure the controller works like onChanged method of TextField
+    gstRateController.addListener(() {
+      setState(() {});
     });
+    super.initState();
   }
 
   @override
+  void dispose() {
+    // To ensure we discard any resources used by the controller object
+    gstRateController.dispose();
+    super.dispose();
+  }
+
+  gstRateSetter(double r) {
+    /*
+    To avoid calling setState in every GSTRateButton we use this
+    r is the rate of the respective button
+    Here we set the value of gstRateController when the GST Rate Button is clicked
+    The controller in turn display the value inside the TextField
+    We set this outside setState so that we can avoid rebuilds
+    Also, this works outside setState
+    We use TextEditingValue and offset to get around the issue that cursor will be at the
+    beginning when we click the GST Rate Button and the set the value inside the
+    GST Rate TextField
+    */
+    gstRateController.value = TextEditingValue(
+      text: r.toString(),
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: r.toString().length),
+      ),
+    );
+    print('$r GST Rate Button clicked');
+    print('controller value: ${gstRateController.text}');
+    // setState(() {
+    //   gstRate = double.parse(gstRateController.text);
+    // });
+  }
+
+  @override
+  // This method is rerun every time setState is called
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called
     return GestureDetector(
       // To enable tap anywhere to dismiss keyboard
       // If we wrap this around body of Scaffold, it does not dismiss keyboard when we tap on some places
@@ -81,7 +113,7 @@ class _GSTHomePageState extends State<GSTHomePage> {
       child: Scaffold(
         appBar: AppBar(
           // Here we take the value from the GSTHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
+          // the App build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
         body: SingleChildScrollView(
@@ -103,8 +135,38 @@ class _GSTHomePageState extends State<GSTHomePage> {
                       // We wrap TextField in expanded as TF needs bounded width
                       // and row provides unbounded width
                       child: TextField(
-                        keyboardType: TextInputType.number,
+                        keyboardType:
+                            // TODO: We use numberWithOptions as iOS may not provide decimal with just number
+                            TextInputType.numberWithOptions(decimal: true),
+                        // maxLength: 10,
+                        inputFormatters: [
+                          // To allow decimal point only once and up to 2 decimal places
+                          // To deny space
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'(^\d*\.?(\d{0,2}))'),
+                          ),
+                          // To limit the number of digits
+                          // We can use 'maxLength' & 'counterText' alternatively
+                          LengthLimitingTextInputFormatter(12),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            print(initialValue
+                                .toStringAsFixed(0)
+                                .replaceFirst('0', '')
+                                .isEmpty);
+                            print(initialValue
+                                .toStringAsFixed(0)
+                                .replaceFirst('0', ''));
+                            if (value.isNotEmpty) {
+                              initialValue = double.parse(value);
+                            } else if (value.isEmpty) {
+                              initialValue = 0;
+                            }
+                          });
+                        },
                         decoration: InputDecoration(
+                          // counterText: '',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -115,7 +177,7 @@ class _GSTHomePageState extends State<GSTHomePage> {
                   //  GST Rate segment
                   margin: EdgeInsets.only(top: padding),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -128,8 +190,16 @@ class _GSTHomePageState extends State<GSTHomePage> {
                             child: TextField(
                               // To set the value on click of GST Rate Button
                               controller: gstRateController,
-
                               keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                // To allow decimal point only once and up to 2 decimal places
+                                // To deny space
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'(^\d*\.?(\d{0,2}))'),
+                                ),
+                                // To limit the number of digits
+                                LengthLimitingTextInputFormatter(9),
+                              ],
                               decoration: InputDecoration(
                                 suffix: Text('%'),
                                 border: OutlineInputBorder(),
@@ -186,12 +256,48 @@ class _GSTHomePageState extends State<GSTHomePage> {
                   ),
                 ),
                 SizedBox(height: 10),
-                SingleChildScrollView(child: GSTOperatorTab()),
-                Text(gstRate.toString()),
+                GSTOperatorTab(),
+                gstSummary(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget gstSummary() {
+    // This check is to avoid 'Invalid Double' error when the filed is empty
+    double rateDouble = gstRateController.text.isEmpty
+        ? 0
+        : double.parse(gstRateController.text);
+    double result = initialValue * rateDouble;
+
+    // Is this optimal
+    bool b = initialValue.toStringAsFixed(0).replaceFirst('0', '').isEmpty;
+
+    // To ensure commas
+    // var f = NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
+    var f = NumberFormat('#,##,###.00', 'en_IN');
+
+    return Container(
+      color: Colors.lightBlueAccent,
+      child: Column(
+        children: [
+          Text(
+            b ? '' : f.format(initialValue),
+            style: TextStyle(fontSize: 30),
+          ),
+          // This is to make sure rate is displayed with decimals
+          Text(
+            f.format(rateDouble) + '%',
+            style: TextStyle(fontSize: 30),
+          ),
+          Text(
+            f.format(result),
+            style: TextStyle(fontSize: 30),
+          ),
+        ],
       ),
     );
   }
