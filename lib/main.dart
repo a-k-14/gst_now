@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
 class Home extends StatelessWidget {
   final String title; // To be used in App Bar
 
-  const Home({Key key, this.title});
+  const Home({this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -71,32 +71,38 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
   String regexpValue = r'(^(\d{1,})\.?(\d{0,2}))';
 
-  static double initialValue = 0;
   // We use TEC instead of onChange as it's the way to clear the TF by click of a button
+  static TextEditingController initialValueController = TextEditingController();
   // To set the value in GST Rate text field on click of GST Rate Button
   static TextEditingController gstRateController = TextEditingController();
 
   // To store the GST rate for calculations
   // double gstRate = 0;
 
-  GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
-    initialValue: initialValue,
+  static GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
+    // initialValue: initialValueController,
     gstRate: gstRateController,
+    currentGSTOperator: currentGSTOperator,
   );
 
   @override
   void initState() {
     print('init called');
+    initialValueController.addListener(() {
+      setState(() {});
+    });
     // This is used to make sure the controller works like onChanged method of TextField
     gstRateController.addListener(() {
       setState(() {});
     });
+
     super.initState();
   }
 
   @override
   void dispose() {
     // To ensure we discard any resources used by the controller object
+    initialValueController.dispose();
     gstRateController.dispose();
     super.dispose();
   }
@@ -119,11 +125,15 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
         TextPosition(offset: r.toString().length),
       ),
     );
-    print('$r GST Rate Button clicked');
-    print('controller value: ${gstRateController.text}');
-    // setState(() {
-    //   gstRate = double.parse(gstRateController.text);
-    // });
+  }
+
+  static int currentGSTOperator;
+  void test(var d) {
+    setState(() {
+      currentGSTOperator = d;
+      _gstCalculatorBrain.currentGSTOperator = d;
+      print(currentGSTOperator);
+    });
   }
 
   @override
@@ -162,20 +172,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       // We can use 'maxLength' & 'counterText' alternatively
                       LengthLimitingTextInputFormatter(12),
                     ],
-                    onChanged: (value) {
-                      setState(() {
-                        if (value.isNotEmpty) {
-                          initialValue = double.parse(value);
-                        } else if (value.isEmpty) {
-                          initialValue = 0;
-                        }
-                        print(initialValue
-                            .toStringAsFixed(0)
-                            .replaceFirst('0', '')
-                            .isEmpty);
-                        print(initialValue.toString());
-                      });
-                    },
+                    controller: initialValueController,
                     decoration: InputDecoration(
                       // counterText: '',
                       border: OutlineInputBorder(),
@@ -267,12 +264,12 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               ),
             ),
             SizedBox(height: 10),
-            GSTOperatorTab(),
+            GSTOperatorTab(f: test),
             gstSummary(),
             ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    initialValue = 0;
+                    initialValueController.clear();
                     gstRateController.clear();
                   });
                 },
@@ -284,9 +281,11 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   }
 
   Widget gstSummary() {
-    String fInitialValue = _gstCalculatorBrain.formatInitialValue();
+    String fInitialValue =
+        _gstCalculatorBrain.formatInitialValue(initialValueController.text);
     String fGSTRate = _gstCalculatorBrain.formatGSTRate();
     String result = _gstCalculatorBrain.result();
+    String gstOperator = _gstCalculatorBrain.gstOperator();
 
     return Container(
       color: Colors.lightBlueAccent,
@@ -295,6 +294,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           Text(fInitialValue, style: TextStyle(fontSize: 30)),
           Text(fGSTRate, style: TextStyle(fontSize: 30)),
           Text(result, style: TextStyle(fontSize: 30)),
+          Text(gstOperator, style: TextStyle(fontSize: 30)),
         ],
       ),
     );
@@ -338,6 +338,10 @@ class GSTRateButton extends StatelessWidget {
 
 // GST Operator Tab
 class GSTOperatorTab extends StatefulWidget {
+  final Function f;
+
+  const GSTOperatorTab({this.f});
+
   @override
   _GSTOperatorTabState createState() => _GSTOperatorTabState();
 }
@@ -354,7 +358,7 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
     return Container(
       // Container is to enforce width
       width: MediaQuery.of(context).size.width * 0.9,
-      // We have edited const double _kMinSegmentedControlHeight = 45.0; // default - 28.0 in the default files
+      // Edited const double _kMinSegmentedControlHeight = 45.0; // default - 28.0 in the default files
       child: CupertinoSlidingSegmentedControl(
           groupValue: segmentedControlGroupValue,
           // padding: EdgeInsets.all(4),
@@ -364,6 +368,7 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
             setState(() {
               segmentedControlGroupValue = i;
             });
+            widget.f(segmentedControlGroupValue);
           }),
     );
   }
