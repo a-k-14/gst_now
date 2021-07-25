@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'calculator_brain.dart';
-import 'constants.dart';
 
 /*
 NOTE:
@@ -39,7 +38,7 @@ class MyApp extends StatelessWidget {
 class Home extends StatelessWidget {
   final String title; // To be used in App Bar
 
-  const Home({this.title});
+  Home({this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -76,26 +75,28 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // To set the value in GST Rate text field on click of GST Rate Button
   static TextEditingController gstRateController = TextEditingController();
 
-  // To store the GST rate for calculations
-  // double gstRate = 0;
-
+  // Instance of GST Calculator Brain to perform calculations and get results
   static GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
-    // initialValue: initialValueController,
+    initialValue: initialValueController,
     gstRate: gstRateController,
-    currentGSTOperator: currentGSTOperator,
   );
 
   @override
   void initState() {
-    print('init called');
     initialValueController.addListener(() {
-      setState(() {});
+      // We call setState so that everytime initial value changes, controller will trigger changes like calling compute method
+      setState(() {
+        // To get updated results everytime initialValue changes
+        _gstCalculatorBrain.compute();
+      });
     });
     // This is used to make sure the controller works like onChanged method of TextField
     gstRateController.addListener(() {
-      setState(() {});
+      setState(() {
+        // To get updated results everytime gstRate changes
+        _gstCalculatorBrain.compute();
+      });
     });
-
     super.initState();
   }
 
@@ -107,18 +108,10 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     super.dispose();
   }
 
+  // To set the gstRate into its TextField on click of GST Rate buttons
+  // r is the rate of the respective GST Rate button
   gstRateSetter(double r) {
-    /*
-    To avoid calling setState in every GSTRateButton we use this
-    r is the rate of the respective button
-    Here we set the value of gstRateController when the GST Rate Button is clicked
-    The controller in turn display the value inside the TextField
-    We set this outside setState so that we can avoid rebuilds
-    Also, this works outside setState
-    We use TextEditingValue and offset to get around the issue that cursor will be at the
-    beginning when we click the GST Rate Button and the set the value inside the
-    GST Rate TextField
-    */
+    // We use offset to avoid cursor moving to the beginning of the TextField
     gstRateController.value = TextEditingValue(
       text: r.toString(),
       selection: TextSelection.fromPosition(
@@ -127,12 +120,21 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     );
   }
 
-  static int currentGSTOperator;
-  void test(var d) {
+  // To trigger gstOperator changes: 0 - Add GST / 1 - Less GST
+  void updateGSTOperator(var v) {
     setState(() {
-      currentGSTOperator = d;
-      _gstCalculatorBrain.currentGSTOperator = d;
-      print(currentGSTOperator);
+      _gstCalculatorBrain.gstOperatorSetter(v);
+      // To get updated results everytime gstOperator changes
+      _gstCalculatorBrain.compute();
+    });
+  }
+
+  // To trigger gstBreakupOperator changes: 0 - CGST&SGST / 1 - IGST
+  void updateGSTBreakupOperator(var v) {
+    setState(() {
+      _gstCalculatorBrain.gstBreakupOperatorSetter(v);
+      // To get updated results everytime gstOperator changes
+      _gstCalculatorBrain.compute();
     });
   }
 
@@ -161,7 +163,6 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     keyboardType:
                         // TODO: We use numberWithOptions as iOS may not provide decimal with just number
                         TextInputType.numberWithOptions(decimal: true),
-                    // maxLength: 10,
                     inputFormatters: [
                       // To allow decimal point only once and up to 2 decimal places
                       // To deny space
@@ -174,7 +175,6 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ],
                     controller: initialValueController,
                     decoration: InputDecoration(
-                      // counterText: '',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -185,7 +185,6 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               //  GST Rate segment
               margin: EdgeInsets.only(top: padding),
               child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -264,8 +263,15 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               ),
             ),
             SizedBox(height: 10),
-            GSTOperatorTab(f: test),
+            GSTOperatorTab(
+              operatorValues: ['+ Add GST', '- Less GST'],
+              f: updateGSTOperator,
+            ),
             gstSummary(),
+            GSTOperatorTab(
+              operatorValues: ['CGST & SGST', 'IGST'],
+              f: updateGSTBreakupOperator,
+            ),
             ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -281,20 +287,47 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   }
 
   Widget gstSummary() {
-    String fInitialValue =
-        _gstCalculatorBrain.formatInitialValue(initialValueController.text);
-    String fGSTRate = _gstCalculatorBrain.formatGSTRate();
-    String result = _gstCalculatorBrain.result();
+    String netAmount = _gstCalculatorBrain.netAmount;
+    String rate = _gstCalculatorBrain.rate + '%';
+    String gstAmount = _gstCalculatorBrain.gstAmount;
+    String grossAmount = _gstCalculatorBrain.grossAmount;
     String gstOperator = _gstCalculatorBrain.gstOperator();
+    String csgstRate = _gstCalculatorBrain.csgstRate;
+    String igstRate = _gstCalculatorBrain.igstRate;
+    String csgstAmount = _gstCalculatorBrain.csgstAmount;
+    String igstAmount = _gstCalculatorBrain.igstAmount;
+    String gstBreakupOperator = _gstCalculatorBrain.gstBreakupOperator();
+
+    Widget a = Column(
+      children: [
+        Text('CGST Rate = $csgstRate%', style: TextStyle(fontSize: 30)),
+        Text('SGST Rate = $csgstRate%', style: TextStyle(fontSize: 30)),
+        Text('CGST Amount = $csgstAmount', style: TextStyle(fontSize: 30)),
+        Text('SGST Amount = $csgstAmount', style: TextStyle(fontSize: 30)),
+      ],
+    );
+
+    Widget b = Column(
+      children: [
+        Text('IGST Rate = $igstRate%', style: TextStyle(fontSize: 30)),
+        Text('IGST Amount = $igstAmount', style: TextStyle(fontSize: 30)),
+      ],
+    );
 
     return Container(
       color: Colors.lightBlueAccent,
       child: Column(
         children: [
-          Text(fInitialValue, style: TextStyle(fontSize: 30)),
-          Text(fGSTRate, style: TextStyle(fontSize: 30)),
-          Text(result, style: TextStyle(fontSize: 30)),
+          Text(netAmount, style: TextStyle(fontSize: 30)),
+          Text(rate, style: TextStyle(fontSize: 30)),
+          Text(gstAmount, style: TextStyle(fontSize: 30)),
+          Text(grossAmount, style: TextStyle(fontSize: 30)),
           Text(gstOperator, style: TextStyle(fontSize: 30)),
+          Container(
+            color: Colors.orangeAccent,
+            child: gstBreakupOperator == 'IGST' ? b : a,
+          ),
+          Text(gstBreakupOperator, style: TextStyle(fontSize: 30)),
         ],
       ),
     );
@@ -303,10 +336,14 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
 class GSTRateButton extends StatelessWidget {
   // To create GST Rate buttons
-  final String rate; // The rate to be displayed on the button
-  final Function onTap; // To set the GST rate value
 
-  GSTRateButton({this.rate, this.onTap}); // Constructor for the GST Rate Button
+  // The rate to be displayed on the button
+  final String rate;
+  // To set the GST rate value into the respective TextField
+  final Function onTap;
+
+  GSTRateButton({this.rate, this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -322,14 +359,10 @@ class GSTRateButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           primary: Colors.white,
           onPrimary: Colors.grey[350],
-          // onSurface: Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        // style: ButtonStyle(
-        //   backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-        // ),
         onPressed: onTap,
       ),
     );
@@ -338,31 +371,39 @@ class GSTRateButton extends StatelessWidget {
 
 // GST Operator Tab
 class GSTOperatorTab extends StatefulWidget {
+  // The operator values like Add/Less GST or CGST&SGST/IGST
+  final List<String> operatorValues;
+  // The function to send the gstOperator value to GST Calculator Brain
   final Function f;
 
-  const GSTOperatorTab({this.f});
+  GSTOperatorTab({this.operatorValues, this.f});
 
   @override
-  _GSTOperatorTabState createState() => _GSTOperatorTabState();
+  _GSTOperatorTabState createState() => _GSTOperatorTabState('a');
 }
 
 class _GSTOperatorTabState extends State<GSTOperatorTab> {
+  final String s;
   int segmentedControlGroupValue = 0;
-  final Map<int, Widget> myTabs = {
-    0: Text("+ Add GST"),
-    1: Text("- Less GST"),
-  };
+
+  _GSTOperatorTabState(this.s);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       // Container is to enforce width
       width: MediaQuery.of(context).size.width * 0.9,
-      // Edited const double _kMinSegmentedControlHeight = 45.0; // default - 28.0 in the default files
+      // Edited const double _kMinSegmentedControlHeight = 50.0;
+      // default - 28.0 in the default files
       child: CupertinoSlidingSegmentedControl(
           groupValue: segmentedControlGroupValue,
           // padding: EdgeInsets.all(4),
-          children: myTabs,
+          // We are using children directly here instead of creating a variable as
+          // we get the error The instance member ‘{0}’ can’t be accessed in an initializer
+          children: {
+            0: Text(widget.operatorValues[0]),
+            1: Text(widget.operatorValues[1]),
+          },
           // i is the value of myTab{int}
           onValueChanged: (i) {
             setState(() {
