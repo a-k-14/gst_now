@@ -36,23 +36,22 @@ class GSTCalculatorBrain {
   String gstAmount = '';
   String grossAmount = '';
 
-  // We create following 2 double variables to store the results temporarily for other calculations
-  // As we generally store results in String format
-  /// <Temporary storage for GST Rate as we use it at multiple places in double format>
-  double rateDouble = 0;
-
-  /// <Temporary storage for GST Amount as we use it at multiple places in double format>
-  double gstAmountDouble = 0;
-
   // gstAmount breakup
   String csgstAmount = '';
-  // String sgstAmount = '';
   String igstAmount = '';
 
   // rate breakup
   String csgstRate = '';
   // String sgstRate = '';
   String igstRate = '';
+
+  // We create following 2 double variables to store the results temporarily for other calculations
+  // As we store the above results in String format
+  /// <Temporary storage for GST Rate as we use it at multiple places in double format>
+  double _rateDouble = 0;
+
+  /// <Temporary storage for GST Amount as we use it at multiple places in double format>
+  double _gstAmountDouble = 0;
 
   /// <To store the current GST Operator Value: 0 - Add GST / 1- Less GST for calculating the result>
   // Default set to 0 - Add GST
@@ -76,11 +75,11 @@ class GSTCalculatorBrain {
 
   // To ensure commas
   // var f = NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
-  static NumberFormat f = NumberFormat('#,##,##0.00', 'en_IN');
+  static NumberFormat f = NumberFormat('#,##,###.##', 'en_IN');
 
   // format method of intl package requires number as input
   // Since some return values in the compute method are strings, we use this method
-  // so that we can avoid using double.parse multiple times in compute method
+  // so that we can avoid using double.parse on such strings multiple times in compute method
   static String formatter(String s) {
     // Convert the input string into number as required by the format method
     // We use double.parse to retain the decimal values
@@ -89,7 +88,7 @@ class GSTCalculatorBrain {
     // Return formatted value as a string
     return f.format(d);
   }
-  // We f.format if we have a double, else we formatter method as above if we have a String
+  // We use f.format if we have a double, else we use formatter method as above if we have a String
 
   void compute() {
     // We convert the TECs to text and store temporarily to avoid doing this conversion multiple times
@@ -99,11 +98,12 @@ class GSTCalculatorBrain {
     // A
     if (initialValueText.isEmpty || gstRateText.isEmpty) {
       // As the rate value is not dependent on gstOperator (Add/Less GST),
-      // we set its value here instead of twice in the following if and then in else
-      // We store GST Rate as a number to use for calculating CGST&SGST/IGST
-      rateDouble = gstRateText.isEmpty ? 0 : double.parse(gstRateText);
+      // we set its value here instead of twice in the following if and then in else statements
+      // We store GST Rate as a number to use for calculating CGST&SGST/IGST rates & amounts
+      _rateDouble = gstRateText.isEmpty ? 0 : double.parse(gstRateText);
       // Then we set the rate value using the above rateDouble
-      rate = f.format(rateDouble);
+      // we check for _rateDouble is equal to 0 to avoid showing 0 when GST Rate entered is empty
+      rate = _rateDouble == 0 ? '' : f.format(_rateDouble);
 
       if (gstOperatorValue == 0) {
         // Add GST case
@@ -127,34 +127,34 @@ class GSTCalculatorBrain {
       // we set its value here instead of twice in the following if and then in else
       // We do not check for isEmpty here as in A, because this statement will be executed only when
       // both initialValue and gstRate are not empty
-      rateDouble = double.parse(gstRateText);
-      rate = f.format(rateDouble);
+      _rateDouble = double.parse(gstRateText);
+      rate = f.format(_rateDouble);
 
       if (gstOperatorValue == 0) {
         // Add GST case
         netAmount = formatter(initialValueText);
 
         // We store GST Amount as a number to use for calculating CGST&SGST/IGST
-        gstAmountDouble = double.parse(initialValueText) * rateDouble / 100;
+        _gstAmountDouble = double.parse(initialValueText) * _rateDouble / 100;
         // The we set the gstAmount value using the double above
-        gstAmount = f.format(gstAmountDouble);
+        gstAmount = f.format(_gstAmountDouble);
 
         grossAmount =
-            f.format(double.parse(initialValueText) + gstAmountDouble);
+            f.format(double.parse(initialValueText) + _gstAmountDouble);
       } else {
         // Less GST case
         grossAmount = formatter(initialValueText);
 
-        gstAmountDouble =
-            double.parse(initialValueText) * (rateDouble / (rateDouble + 100));
+        _gstAmountDouble = double.parse(initialValueText) *
+            (_rateDouble / (_rateDouble + 100));
 
-        gstAmount = f.format(gstAmountDouble);
+        gstAmount = f.format(_gstAmountDouble);
 
-        netAmount = f.format(double.parse(initialValueText) - gstAmountDouble);
+        netAmount = f.format(double.parse(initialValueText) - _gstAmountDouble);
       }
     }
     // Here we set the CGST&SGST/IGST rates and amounts
-    if (rateDouble == 0) {
+    if (_rateDouble == 0) {
       csgstRate = '';
       // sgstRate = '';
       igstRate = '';
@@ -165,22 +165,23 @@ class GSTCalculatorBrain {
     } else {
       if (gstBreakupOperatorValue == 0) {
         // CGST&SGST case
-        csgstRate = f.format(rateDouble / 2);
+        csgstRate = f.format(_rateDouble / 2);
         // sgstRate = cgstRate;
         igstRate = '';
 
-        csgstAmount = f.format(gstAmountDouble / 2);
-        // sgstAmount = cgstAmount;
+        // We check this condition to avoid showing 0 when _gstAmountDouble is 0/empty
+        csgstAmount =
+            _gstAmountDouble == 0 ? '' : f.format(_gstAmountDouble / 2);
         igstAmount = '';
       } else {
         // IGST Case
-        csgstRate = '1';
+        csgstRate = '';
         // sgstRate = '';
-        igstRate = f.format(rateDouble);
+        igstRate = f.format(_rateDouble);
 
         csgstAmount = '';
-        // sgstAmount = '';
-        igstAmount = f.format(gstAmountDouble);
+        // We check this condition to avoid showing 0 when _gstAmountDouble is 0/empty
+        igstAmount = _gstAmountDouble == 0 ? '' : f.format(_gstAmountDouble);
       }
     }
   }
