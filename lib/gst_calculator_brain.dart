@@ -74,8 +74,9 @@ class GSTCalculatorBrain {
   }
 
   // To ensure commas
-  // var f = NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
-  static NumberFormat f = NumberFormat('#,##,###.##', 'en_IN');
+  static NumberFormat f =
+      NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
+  // static NumberFormat f = NumberFormat('#,##,###.##', 'en_IN');
 
   // format method of intl package requires number as input
   // Since some return values in the compute method are strings, we use this method
@@ -90,6 +91,7 @@ class GSTCalculatorBrain {
   }
   // We use f.format if we have a double, else we use formatter method as above if we have a String
 
+  // The method where all the calculations happen
   void compute() {
     // We convert the TECs to text and store temporarily to avoid doing this conversion multiple times
     String initialValueText = initialValue.text;
@@ -136,6 +138,7 @@ class GSTCalculatorBrain {
 
         // We store GST Amount as a number to use for calculating CGST&SGST/IGST
         _gstAmountDouble = double.parse(initialValueText) * _rateDouble / 100;
+        print(_gstAmountDouble.toString());
         // The we set the gstAmount value using the double above
         gstAmount = f.format(_gstAmountDouble);
 

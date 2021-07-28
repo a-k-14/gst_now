@@ -6,6 +6,12 @@ Color kAccentColor = Colors.blueAccent[400];
 
 Color kGrey300 = Colors.grey[300];
 Color kGrey350 = Colors.grey[350];
+// Alternating colors for GST summary table
+Color kGSTSummaryRowBackground1 = Color(0x1A8690B1);
+Color kGSTSummaryRowBackground2 = Color(0x58690B1);
+TextStyle kGSTSummaryRowTextStyle1 =
+    TextStyle(fontSize: kTextSize, color: Colors.grey[700]);
+TextStyle kGSTSummaryRowTextStyle2 = TextStyle(fontSize: kTextSize);
 
 // To enforce validation on TextFields
 // To allow decimal point only once and up to 2 decimal places
@@ -13,6 +19,7 @@ Color kGrey350 = Colors.grey[350];
 String kRegexpValue = r'(^(\d{1,})\.?(\d{0,2}))';
 
 double kBorderRadius = 8;
+double kGSTSummaryBorderRadius = 6;
 
 double kSizedBoxHeight = 10;
 

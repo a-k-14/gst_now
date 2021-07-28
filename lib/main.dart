@@ -320,14 +320,14 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               ],
             ),
           ),
-          SizedBox(height: kSizedBoxHeight),
+          SizedBox(height: kSizedBoxHeight + 8),
           GSTOperatorTab(
             operatorValues: ['+ Add GST', '- Less GST'],
             f: updateGSTOperator,
           ),
-          SizedBox(height: kSizedBoxHeight - 5),
+          SizedBox(height: kSizedBoxHeight),
           gstSummary(),
-          SizedBox(height: kSizedBoxHeight - 5),
+          SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
             operatorValues: ['CGST & SGST', 'IGST'],
             f: updateGSTBreakupOperator,
@@ -349,125 +349,161 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     String igstAmount = _gstCalculatorBrain.igstAmount;
     String gstBreakupOperator = _gstCalculatorBrain.gstBreakupOperator();
 
-    Widget rowDisplay({Widget title, Widget value, Color color}) {
+    // To display Net Amount, Total Amount as titles and their values as values
+    // color is taken as a parameter as the rows have alternating colors
+    // borderRadius is taken as a parameter as the corner radius is different for 1st & 3rd rows
+    // We use SCS to scroll long length numbers
+    Widget customRow(
+        {Widget title, Widget value, Color color, BorderRadius borderRadius}) {
       return Container(
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.symmetric(
+            horizontal: kPadding + 2, vertical: kPadding + 4),
         decoration: BoxDecoration(
           color: color,
+          borderRadius: borderRadius,
         ),
         child: Row(
           children: [
+            // Word occupy 2/3rd space
             Expanded(child: title, flex: 2),
-            Expanded(child: value, flex: 1),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: value,
+              ),
+            ),
           ],
         ),
       );
     }
 
     Widget csgstSummary = Container(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 6),
+      padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
       alignment: Alignment.centerLeft,
-      // decoration: BoxDecoration(
-      //   border: Border.all(color: Colors.grey[200]),
-      // ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'CGST @ $csgstRate% = $csgstAmount',
-            style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500),
-          ),
-          Container(
-              height: 0, color: Colors.grey[100], padding: EdgeInsets.all(8)),
-          Text(
-            'SGST @ $csgstRate% = $csgstAmount',
-            style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500),
-          ),
-        ],
+      // width: 200,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'CGST @ $csgstRate% = $csgstAmount',
+              style: TextStyle(
+                  fontSize: 13.5,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 3, bottom: 3),
+              color: kGSTSummaryRowBackground1,
+              height: 1,
+              width: 90,
+            ),
+            Text(
+              'SGST @ $csgstRate% = $csgstAmount',
+              style: TextStyle(
+                  fontSize: 13.5,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
       ),
     );
 
     Widget igstSummary = Container(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 6),
+      width: 200,
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
       alignment: Alignment.centerLeft,
-      child: Text(
-        'IGST @ $igstRate% = $igstAmount',
-        style: TextStyle(
-            fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Text(
+          'IGST @ $igstRate% = $igstAmount',
+          style: TextStyle(
+              fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w500),
+        ),
       ),
     );
 
     return Container(
-      margin: EdgeInsets.all(10),
-      // height: 225,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(kBorderRadius - 2),
-        border: Border.all(
-          color: Color(0x1A8690B1),
-        ),
-      ),
+      margin: EdgeInsets.all(kPadding),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          rowDisplay(
+          customRow(
             title: Text(
               'Net Amount',
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              style: kGSTSummaryRowTextStyle1,
             ),
             value: Text(
               netAmount,
-              style: TextStyle(fontSize: 16),
+              style: kGSTSummaryRowTextStyle2,
             ),
-            color: Color(0x1A8690B1),
+            color: kGSTSummaryRowBackground1,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(kGSTSummaryBorderRadius),
+              topRight: Radius.circular(kGSTSummaryBorderRadius),
+            ),
           ),
-          // Container(height: 2, color: Color(0x248690B1)),
           Container(
-            color: Color(0x58690B1),
+            color: kGSTSummaryRowBackground2,
             padding: EdgeInsets.fromLTRB(12, 8, 12, 4),
             child: Row(
               children: [
                 Expanded(
                     child: Text(
                       'GST @ $gstRate',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[700],
-                      ),
+                      style: kGSTSummaryRowTextStyle1,
                     ),
                     flex: 2),
                 Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
                     child: Text(
                       gstAmount,
-                      style: TextStyle(fontSize: 16),
+                      style: kGSTSummaryRowTextStyle2,
                     ),
-                    flex: 1),
+                  ),
+                ),
               ],
             ),
           ),
-          Container(
-            height: 40,
-            color: Color(0x58690B1),
-            child: gstBreakupOperator == 'IGST' ? igstSummary : csgstSummary,
+          // We use row and empty 2nd container to get color next to CGST&SGST
+          Row(
+            children: [
+              Container(
+                height: 55,
+                width: 200,
+                color: kGSTSummaryRowBackground2,
+                child:
+                    gstBreakupOperator == 'IGST' ? igstSummary : csgstSummary,
+              ),
+              Expanded(
+                  child: Container(
+                color: kGSTSummaryRowBackground2,
+                height: 55,
+              )),
+            ],
           ),
-          rowDisplay(
-            title: Text('Total Amount',
-                style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+          customRow(
+            title: Text(
+              'Total Amount',
+              style: kGSTSummaryRowTextStyle1,
+            ),
             value: Text(
               totalAmount,
+              // overflow: TextOverflow.ellipsis,
+              // maxLines: 1,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: kTextSize,
                 color: kAccentColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            color: Color(0x1A8690B1),
+            color: kGSTSummaryRowBackground1,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(kGSTSummaryBorderRadius),
+              bottomRight: Radius.circular(kGSTSummaryBorderRadius),
+            ),
           ),
         ],
       ),
