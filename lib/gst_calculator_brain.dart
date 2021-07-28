@@ -24,7 +24,7 @@ class GSTCalculatorBrain {
   /// <TextEditingController for GST Rate>
   final TextEditingController gstRate;
 
-  GSTCalculatorBrain({this.initialValue, this.gstRate});
+  GSTCalculatorBrain({required this.initialValue, required this.gstRate});
 
   // Result values to be returned
   String netAmount = '';
@@ -74,9 +74,8 @@ class GSTCalculatorBrain {
   }
 
   // To ensure commas
-  static NumberFormat f =
-      NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
-  // static NumberFormat f = NumberFormat('#,##,###.##', 'en_IN');
+  // static NumberFormat f = NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
+  static NumberFormat f = NumberFormat('#,##,###.##', 'en_IN');
 
   // format method of intl package requires number as input
   // Since some return values in the compute method are strings, we use this method
