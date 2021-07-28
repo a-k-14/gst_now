@@ -31,7 +31,7 @@ TextStyle kGSTSummaryRowTextStyle1 = TextStyle(
 );
 TextStyle kGSTSummaryRowTextStyle2 = TextStyle(fontSize: kTextSize);
 TextStyle kGSTSummaryBreakupTextStyle = TextStyle(
-  fontSize: kTextSize - 1.5,
+  fontSize: kTextSize - 2,
   color: Colors.grey,
   fontWeight: FontWeight.w500,
 );

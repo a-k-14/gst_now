@@ -300,9 +300,7 @@ class _GSTTipState extends State<GSTTip> {
             Expanded(
               child: Text(
                 title,
-                style: kGSTSummaryBreakupTextStyle.copyWith(
-                  fontSize: kTextSize - 3,
-                ),
+                style: kGSTSummaryBreakupTextStyle,
               ),
             ),
             Expanded(
