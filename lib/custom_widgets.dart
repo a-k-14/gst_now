@@ -320,26 +320,37 @@ class _GSTTipState extends State<GSTTip> {
 
     // The Tip table returned by the gstTipTable widget
     // and used inside the Expansion Panel
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: kPadding),
-      decoration: BoxDecoration(
-        border: Border.all(color: kGSTSummaryRowBackground1),
-        borderRadius: BorderRadius.circular(kGSTSummaryBorderRadius),
-      ),
-      child: Column(
-        children: [
-          customTipRow(
-            title: 'CGST&SGST',
-            tip: csgstTip,
-            color: kGSTSummaryRowBackground1,
+    // We use outer widget as column to avoid the border created by the container around text
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: kPadding),
+          decoration: BoxDecoration(
+            border: Border.all(color: kGSTSummaryRowBackground1),
+            borderRadius: BorderRadius.circular(kGSTSummaryBorderRadius),
           ),
-          customTipRow(
-            title: 'IGST',
-            tip: igstTip,
-            color: kGSTSummaryRowBackground2,
+          child: Column(
+            children: [
+              customTipRow(
+                title: 'CGST&SGST',
+                tip: csgstTip,
+                color: kGSTSummaryRowBackground1,
+              ),
+              customTipRow(
+                title: 'IGST',
+                tip: igstTip,
+                color: kGSTSummaryRowBackground2,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        // This is placed with the tip table so that it will not stick out in the home screen
+        Text(
+          '\n\n\nMade with Flutter 💙 | ar 🤗\n\n',
+          textAlign: TextAlign.center,
+          style: kGSTSummaryBreakupTextStyle,
+        ),
+      ],
     );
   }
 }

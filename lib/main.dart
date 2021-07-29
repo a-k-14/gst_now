@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -334,11 +336,6 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             f: updateGSTBreakupOperator,
           ),
           GSTTip(),
-          Text(
-            '\n\nMade with Flutter 💙 | ar 🤗\n\n',
-            textAlign: TextAlign.center,
-            style: kGSTSummaryBreakupTextStyle,
-          ),
         ],
       ),
     );
