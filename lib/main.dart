@@ -1,8 +1,5 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart'; // For using RegExp
 import 'constants.dart';
 import 'custom_widgets.dart';
 import 'gst_calculator_brain.dart';
@@ -16,6 +13,7 @@ TODO: decimals precision - how many and option to set by user
 2. Suffix %
 3. default rate
 4. edit rates and change the order
+5. Round icons in emulator
 */
 
 void main() => runApp(MyApp());

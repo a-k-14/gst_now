@@ -1,4 +1,4 @@
-package com.resoso.gst_calc
+package com.resoso.gst_now
 
 import io.flutter.embedding.android.FlutterActivity
 
