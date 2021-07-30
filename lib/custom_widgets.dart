@@ -181,9 +181,12 @@ Widget gstSummary(GSTCalculatorBrain _gstCalculatorBrain) {
             padding: EdgeInsets.symmetric(
                 horizontal: kPadding + 2, vertical: kPadding + 4)),
         customSummaryRow(
-          title: Text(
-            'GST @ $gstRate%',
-            style: kGSTSummaryRowTextStyle1,
+          title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              'GST @ $gstRate%',
+              style: kGSTSummaryRowTextStyle1,
+            ),
           ),
           value: Text(
             gstAmount,
