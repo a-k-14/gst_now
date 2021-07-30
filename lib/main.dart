@@ -51,14 +51,21 @@ class Home extends StatelessWidget {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(title, style: TextStyle(color: Colors.black)),
-          elevation: 0,
+      // Added SafeArea to avoid 'Clear All' going behind notch for iPhone
+      // Only added for left & right as black bars were shown on top & bottom in portrait mode on iPhones
+      // TODO: Need to check in android & iPhone with notch in portrait & landscape modes
+      child: SafeArea(
+        top: false,
+        bottom: false,
+        child: Scaffold(
           backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: Text(title, style: TextStyle(color: Colors.black)),
+            elevation: 0,
+            backgroundColor: Colors.white,
+          ),
+          body: GSTCalculatorPage(),
         ),
-        body: GSTCalculatorPage(),
       ),
     );
   }
@@ -71,15 +78,18 @@ class GSTCalculatorPage extends StatefulWidget {
 
 class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // We use TEC instead of onChange as it's the way to clear the TF by click of a button
-  static TextEditingController initialValueController = TextEditingController();
+  // We used static keyword for TEC and instantiated them in calculator brain object
+  // This way we get that a disposed TextEditingController was used
+  // So we use setters in setState in initState
+  final TextEditingController initialValueController = TextEditingController();
   // To set the value in GST Rate text field on click of GST Rate Button
-  static TextEditingController gstRateController = TextEditingController();
+  final TextEditingController gstRateController = TextEditingController();
 
   // Instance of GST Calculator Brain to perform calculations and get results
   static GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
-    initialValue: initialValueController,
-    gstRate: gstRateController,
-  );
+      // initialValue: initialValueController,
+      // gstRate: gstRateController,
+      );
 
   @override
   void initState() {
@@ -87,6 +97,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // We call setState so that everytime initial value changes, controller will trigger changes like calling compute method
       setState(() {
         // To get updated results everytime initialValue changes
+        _gstCalculatorBrain.initialValueText = initialValueController.text;
         _gstCalculatorBrain.compute();
       });
     });
@@ -94,6 +105,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     gstRateController.addListener(() {
       setState(() {
         // To get updated results everytime gstRate changes
+        _gstCalculatorBrain.gstRateText = gstRateController.text;
         _gstCalculatorBrain.compute();
       });
     });

@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /*
  <Role> get data - calc result - return formatted data and formatted result
  <Process>
- Get the initialValue & gstRate as TEC initialized via the constructor
+ Get the initialValue & gstRate as strings
  Get the gstOperator value via method call. Initial value is 0 - Add GST
 
- A. Either initialValue || gstRate is empty -
+ A. Either initialValueText || gstRateText is empty -
   if gstOperator == 0 - Add GST case, then netAmount = initialValue, rate = gstRate, grossAmount = ''
   else gstOperator == 1 - Less GST case, them netAmount = '', rate = gstRate, grossAmount = initialValue
 
@@ -19,12 +18,32 @@ import 'package:intl/intl.dart';
 
 class GSTCalculatorBrain {
   // TODO: should I use final here
-  final TextEditingController initialValue;
+  String initialValueText = '';
 
   /// <TextEditingController for GST Rate>
-  final TextEditingController gstRate;
+  String gstRateText = '';
 
-  GSTCalculatorBrain({required this.initialValue, required this.gstRate});
+  // GSTCalculatorBrain({required this.initialValue, required this.gstRate});
+
+  /// <To store the current GST Operator Value: 0 - Add GST / 1- Less GST for calculating the result>
+  // Default set to 0 - Add GST
+  // TODO: Option for user to set default value in settings
+  int gstOperatorValue = 0;
+
+  /// <To store the current GST Breakup Operator Value: 0 - CGST&SGST / 1- IGST for calculating the result>
+  // Default set to 0 - CGST&SGST
+  // TODO: Option for user to set default value in settings
+  int gstBreakupOperatorValue = 0;
+
+  // To set the gstOperatorValue to 0 - Add GST or 1 - Less GST
+  void gstOperatorSetter(int i) {
+    gstOperatorValue = i;
+  }
+
+  // To set the gstBreakupOperatorValue to 0 - Add GST or 1 - Less GST
+  void gstBreakupOperatorSetter(int i) {
+    gstBreakupOperatorValue = i;
+  }
 
   // Result values to be returned
   String netAmount = '';
@@ -53,26 +72,6 @@ class GSTCalculatorBrain {
   /// <Temporary storage for GST Amount as we use it at multiple places in double format>
   double _gstAmountDouble = 0;
 
-  /// <To store the current GST Operator Value: 0 - Add GST / 1- Less GST for calculating the result>
-  // Default set to 0 - Add GST
-  // TODO: Option for user to set default value in settings
-  int gstOperatorValue = 0;
-
-  /// <To store the current GST Breakup Operator Value: 0 - CGST&SGST / 1- IGST for calculating the result>
-  // Default set to 0 - CGST&SGST
-  // TODO: Option for user to set default value in settings
-  int gstBreakupOperatorValue = 0;
-
-  // To set the gstOperatorValue to 0 - Add GST or 1 - Less GST
-  void gstOperatorSetter(int i) {
-    gstOperatorValue = i;
-  }
-
-  // To set the gstBreakupOperatorValue to 0 - Add GST or 1 - Less GST
-  void gstBreakupOperatorSetter(int i) {
-    gstBreakupOperatorValue = i;
-  }
-
   // To ensure commas
   // static NumberFormat f = NumberFormat.currency(decimalDigits: 2, name: '', locale: 'en_IN');
   static NumberFormat f = NumberFormat('#,##,###.##', 'en_IN');
@@ -93,8 +92,8 @@ class GSTCalculatorBrain {
   // The method where all the calculations happen
   void compute() {
     // We convert the TECs to text and store temporarily to avoid doing this conversion multiple times
-    String initialValueText = initialValue.text;
-    String gstRateText = gstRate.text;
+    // String initialValueText = initialValue.text;
+    // String gstRateText = gstRate.text;
 
     // A
     if (initialValueText.isEmpty || gstRateText.isEmpty) {
@@ -137,7 +136,6 @@ class GSTCalculatorBrain {
 
         // We store GST Amount as a number to use for calculating CGST&SGST/IGST
         _gstAmountDouble = double.parse(initialValueText) * _rateDouble / 100;
-        print(_gstAmountDouble.toString());
         // The we set the gstAmount value using the double above
         gstAmount = f.format(_gstAmountDouble);
 

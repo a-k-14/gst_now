@@ -290,11 +290,17 @@ class _GSTTipState extends State<GSTTip> {
       required String title,
       required String tip,
       required Color color,
+      required BorderRadius borderRadius,
     }) {
       // Custom Tip Row to be returned
       return Container(
         padding: EdgeInsets.all(kPadding - 2),
-        color: color,
+        decoration: BoxDecoration(
+          border: Border.all(color: kGSTSummaryRowBackground1),
+          // We take border radius as a parameter as the border corners are different for 1st & 2nd rows
+          borderRadius: borderRadius,
+          color: color,
+        ),
         child: Row(
           children: [
             Expanded(
@@ -325,21 +331,25 @@ class _GSTTipState extends State<GSTTip> {
       children: [
         Container(
           margin: EdgeInsets.symmetric(horizontal: kPadding),
-          decoration: BoxDecoration(
-            border: Border.all(color: kGSTSummaryRowBackground1),
-            borderRadius: BorderRadius.circular(kGSTSummaryBorderRadius),
-          ),
           child: Column(
             children: [
               customTipRow(
                 title: 'CGST&SGST',
                 tip: csgstTip,
                 color: kGSTSummaryRowBackground1,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(kBorderRadius),
+                  topRight: Radius.circular(kBorderRadius),
+                ),
               ),
               customTipRow(
                 title: 'IGST',
                 tip: igstTip,
                 color: kGSTSummaryRowBackground2,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(kBorderRadius),
+                  bottomRight: Radius.circular(kBorderRadius),
+                ),
               ),
             ],
           ),
