@@ -3,22 +3,19 @@ import 'package:intl/intl.dart';
 /*
  <Role> get data - calc result - return formatted data and formatted result
  <Process>
- Get the initialValue & gstRate as strings
+ Get the baseValueText & gstRate as strings
  Get the gstOperator value via method call. Initial value is 0 - Add GST
-
- A. Either initialValueText || gstRateText is empty -
-  if gstOperator == 0 - Add GST case, then netAmount = initialValue, rate = gstRate, grossAmount = ''
+ A. Either baseValueText || gstRateText is empty -
+  if gstOperator == 0 - Add GST case, then netAmount = baseValue, rate = gstRate, grossAmount = ''
   else gstOperator == 1 - Less GST case, them netAmount = '', rate = gstRate, grossAmount = initialValue
-
- B. Or it means initialValue & gstRate are not empty -
-  if gstOperator == 0 - Add GST case, then netAmount = initialValue, rate = gstRate, grossAmount = initialValue( 1 + gstRate/100)
-  if gstOperator == 1 - Less GST case, then rate = gstRate, grossAmount = initialValue, rate = gstRate, netAmount = initialValue( 1 - gstRate / (100 + gstRate) )
-
+ B. Or it means baseValue & gstRate are not empty -
+  if gstOperator == 0 - Add GST case, then netAmount = baseValue, rate = gstRate, grossAmount = baseValue( 1 + gstRate/100)
+  if gstOperator == 1 - Less GST case, then rate = gstRate, grossAmount = baseValue, rate = gstRate, netAmount = baseValue( 1 - gstRate / (100 + gstRate) )
 */
 
 class GSTCalculatorBrain {
   // TODO: should I use final here
-  String initialValueText = '';
+  String baseValueText = '';
 
   /// <TextEditingController for GST Rate>
   String gstRateText = '';
@@ -96,7 +93,7 @@ class GSTCalculatorBrain {
     // String gstRateText = gstRate.text;
 
     // A
-    if (initialValueText.isEmpty || gstRateText.isEmpty) {
+    if (baseValueText.isEmpty || gstRateText.isEmpty) {
       // As the rate value is not dependent on gstOperator (Add/Less GST),
       // we set its value here instead of twice in the following if and then in else statements
       // We store GST Rate as a number to use for calculating CGST&SGST/IGST rates & amounts
@@ -107,15 +104,14 @@ class GSTCalculatorBrain {
 
       if (gstOperatorValue == 0) {
         // Add GST case
-        netAmount = initialValueText.isEmpty ? '' : formatter(initialValueText);
+        netAmount = baseValueText.isEmpty ? '' : formatter(baseValueText);
 
         grossAmount = '';
       } else {
         // Less GST case
         netAmount = '';
 
-        grossAmount =
-            initialValueText.isEmpty ? '' : formatter(initialValueText);
+        grossAmount = baseValueText.isEmpty ? '' : formatter(baseValueText);
       }
 
       // As either initialValue or gstRate will be empty we cannot calculate the gstAmount
@@ -132,25 +128,24 @@ class GSTCalculatorBrain {
 
       if (gstOperatorValue == 0) {
         // Add GST case
-        netAmount = formatter(initialValueText);
+        netAmount = formatter(baseValueText);
 
         // We store GST Amount as a number to use for calculating CGST&SGST/IGST
-        _gstAmountDouble = double.parse(initialValueText) * _rateDouble / 100;
+        _gstAmountDouble = double.parse(baseValueText) * _rateDouble / 100;
         // The we set the gstAmount value using the double above
         gstAmount = f.format(_gstAmountDouble);
 
-        grossAmount =
-            f.format(double.parse(initialValueText) + _gstAmountDouble);
+        grossAmount = f.format(double.parse(baseValueText) + _gstAmountDouble);
       } else {
         // Less GST case
-        grossAmount = formatter(initialValueText);
+        grossAmount = formatter(baseValueText);
 
-        _gstAmountDouble = double.parse(initialValueText) *
-            (_rateDouble / (_rateDouble + 100));
+        _gstAmountDouble =
+            double.parse(baseValueText) * (_rateDouble / (_rateDouble + 100));
 
         gstAmount = f.format(_gstAmountDouble);
 
-        netAmount = f.format(double.parse(initialValueText) - _gstAmountDouble);
+        netAmount = f.format(double.parse(baseValueText) - _gstAmountDouble);
       }
     }
     // Here we set the CGST&SGST/IGST rates and amounts

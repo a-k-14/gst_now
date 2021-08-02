@@ -81,7 +81,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // We used static keyword for TEC and instantiated them in calculator brain object
   // This way we get that a disposed TextEditingController was used
   // So we use setters in setState in initState
-  final TextEditingController initialValueController = TextEditingController();
+  final TextEditingController baseValueController = TextEditingController();
   // To set the value in GST Rate text field on click of GST Rate Button
   final TextEditingController gstRateController = TextEditingController();
 
@@ -93,11 +93,11 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
   @override
   void initState() {
-    initialValueController.addListener(() {
+    baseValueController.addListener(() {
       // We call setState so that everytime initial value changes, controller will trigger changes like calling compute method
       setState(() {
         // To get updated results everytime initialValue changes
-        _gstCalculatorBrain.initialValueText = initialValueController.text;
+        _gstCalculatorBrain.baseValueText = baseValueController.text;
         _gstCalculatorBrain.compute();
       });
     });
@@ -115,7 +115,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   @override
   void dispose() {
     // To ensure we discard any resources used by the controller object
-    initialValueController.dispose();
+    baseValueController.dispose();
     gstRateController.dispose();
     super.dispose();
   }
@@ -179,7 +179,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       // To ensure Initial Value and GST Rate take same width
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
-                        'Initial Value',
+                        'Base Value',
                         style: TextStyle(
                           fontSize: kTextSize,
                         ),
@@ -187,7 +187,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ),
                     Expanded(
                       child: TextField(
-                        controller: initialValueController,
+                        controller: baseValueController,
                         // TODO: We use numberWithOptions as iOS may not provide decimal with just number
                         keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
@@ -323,7 +323,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ),
                     onPressed: () {
                       setState(() {
-                        initialValueController.clear();
+                        baseValueController.clear();
                         gstRateController.clear();
                       });
                     },
