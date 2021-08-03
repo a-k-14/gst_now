@@ -9,11 +9,10 @@ NOTE:
 1. Initial Value - 12 digits incl decimal separator and 2 digits after decimal
 1. GST Rate - 8 digits incl decimal separator and 2 digits after decimal
 TODO: decimals precision - how many and option to set by user
-1. keyboard type in iOS and number validations in iOS
-2. Suffix %
+1. Base Value to Base Amount
+2.
 3. default rate
 4. edit rates and change the order
-5. Round icons in emulator
 */
 
 void main() => runApp(MyApp());
@@ -122,12 +121,12 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
   // To set the gstRate into its TextField on click of GST Rate buttons
   // r is the rate of the respective GST Rate button
-  gstRateSetter(double r) {
+  gstRateSetter(String r) {
     // We use offset to avoid cursor moving to the beginning of the TextField
     gstRateController.value = TextEditingValue(
-      text: r.toString(),
+      text: '$r.0',
       selection: TextSelection.fromPosition(
-        TextPosition(offset: r.toString().length),
+        TextPosition(offset: r.length),
       ),
     );
   }
@@ -273,48 +272,9 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ),
                   ],
                 ),
-                Container(
-                  // Contains the SCS with GST Rate Buttons
-                  padding: EdgeInsets.all(kPadding - 4),
-                  margin: EdgeInsets.only(top: 5),
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(22, 118, 118, 128),
-                    borderRadius: BorderRadius.circular(kBorderRadius),
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        GSTRateButton(
-                          rate: '1%',
-                          onTap: () {
-                            return gstRateSetter(1);
-                          },
-                        ),
-                        GSTRateButton(
-                          rate: '3%',
-                          onTap: () => gstRateSetter(3),
-                        ),
-                        GSTRateButton(
-                          rate: '5%',
-                          onTap: () => gstRateSetter(5),
-                        ),
-                        GSTRateButton(
-                          rate: '12%',
-                          onTap: () => gstRateSetter(12),
-                        ),
-                        GSTRateButton(
-                          rate: '18%',
-                          onTap: () => gstRateSetter(18),
-                        ),
-                        GSTRateButton(
-                          rate: '28%',
-                          onTap: () => gstRateSetter(28),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                GSTRateButton(
+                    gstRatesList: ['1', '3', '5', '12', '28'],
+                    onTap: gstRateSetter),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(

@@ -1,43 +1,58 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gst_calc/gst_calculator_brain.dart';
-
 import 'constants.dart';
-
 // This file stores the custom widgets
 
 // To create the GST Rate Buttons
 class GSTRateButton extends StatelessWidget {
-  // The rate to be displayed on the button
-  final String rate;
+  // The list of rates to be displayed as buttons
+  final List<String> gstRatesList;
   // To set the GST rate value into the respective TextField
   final Function onTap;
 
-  GSTRateButton({required this.rate, required this.onTap});
+  GSTRateButton({required this.gstRatesList, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      // Width & height given to keep all boxes consistent
-      width: 65,
-      height: 40,
-      // Space between the buttons
-      margin: EdgeInsets.only(right: 6),
-      child: ElevatedButton(
-        child: Text(
-          rate,
-          style: TextStyle(color: Colors.black),
+      // Contains the SCS with GST Rate Buttons
+      padding: EdgeInsets.all(kPadding - 4),
+      margin: EdgeInsets.only(top: 5),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(22, 118, 118, 128),
+        borderRadius: BorderRadius.circular(kBorderRadius),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (String gstRate in gstRatesList)
+              Container(
+                // Width & height given to keep all boxes consistent
+                width: 65,
+                height: 40,
+                // Space between the buttons
+                margin: EdgeInsets.only(right: 6),
+                child: ElevatedButton(
+                  child:
+                      Text('$gstRate%', style: TextStyle(color: Colors.black)),
+                  style: ElevatedButton.styleFrom(
+                    // Button color
+                    primary: Colors.white,
+                    // Splash color
+                    onPrimary: Colors.grey[350],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  onPressed: () {
+                    onTap(gstRate);
+                  },
+                ),
+              ),
+          ],
         ),
-        style: ElevatedButton.styleFrom(
-          // Button color
-          primary: Colors.white,
-          // Splash color
-          onPrimary: Colors.grey[350],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
-        ),
-        onPressed: onTap as void Function()?,
       ),
     );
   }
