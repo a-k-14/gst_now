@@ -7,7 +7,7 @@ import 'constants.dart';
 // To create the GST Rate Buttons
 class GSTRateButton extends StatelessWidget {
   // The list of rates to be displayed as buttons
-  final List<String> gstRatesList;
+  final List<double> gstRatesList;
   // To set the GST rate value into the respective TextField
   final Function onTap;
 
@@ -27,7 +27,7 @@ class GSTRateButton extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            for (String gstRate in gstRatesList)
+            for (double gstRate in gstRatesList)
               Container(
                 // Width & height given to keep all boxes consistent
                 width: 65,
@@ -35,8 +35,8 @@ class GSTRateButton extends StatelessWidget {
                 // Space between the buttons
                 margin: EdgeInsets.only(right: 6),
                 child: ElevatedButton(
-                  child:
-                      Text('$gstRate%', style: TextStyle(color: Colors.black)),
+                  child: Text('${gstRate.toInt()}%',
+                      style: TextStyle(color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     // Button color
                     primary: Colors.white,

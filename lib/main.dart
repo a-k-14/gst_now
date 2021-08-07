@@ -126,14 +126,15 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
   // To set the gstRate into its TextField on click of GST Rate buttons
   // r is the rate of the respective GST Rate button
-  gstRateSetter(String r) {
+  gstRateSetter(double r) {
     // We use offset to avoid cursor moving to the beginning of the TextField
     gstRateController.value = TextEditingValue(
-      text: '$r.0',
+      text: r.toString(),
       selection: TextSelection.fromPosition(
-        TextPosition(offset: r.length),
+        TextPosition(offset: r.toString().length),
       ),
     );
+    FocusScope.of(context).unfocus();
   }
 
   // To trigger gstOperator changes: 0 - Add GST / 1 - Less GST
@@ -143,6 +144,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // To get updated results everytime gstOperator changes
       _gstCalculatorBrain.compute();
     });
+    FocusScope.of(context).unfocus();
   }
 
   // To trigger gstBreakupOperator changes: 0 - CGST&SGST / 1 - IGST
@@ -280,8 +282,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                   ],
                 ),
                 GSTRateButton(
-                    gstRatesList: ['1', '3', '5', '12', '18', '28'],
-                    onTap: gstRateSetter),
+                    gstRatesList: [1, 3, 5, 12, 18, 28], onTap: gstRateSetter),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
