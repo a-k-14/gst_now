@@ -83,6 +83,7 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
       // default - 28.0 in the default files
       child: CupertinoSlidingSegmentedControl(
         groupValue: segmentedControlGroupValue,
+        // thumbColor: Color(0x9f1388ef),
         // padding: EdgeInsets.all(0),
         // We are using children directly here instead of creating a variable as
         // we get the error The instance member ‘{0}’ can’t be accessed in an initializer
@@ -109,7 +110,7 @@ Widget gstSummary(GSTCalculatorBrain _gstCalculatorBrain) {
   String netAmount = _gstCalculatorBrain.netAmount;
   String gstRate = _gstCalculatorBrain.rate;
   String gstAmount = _gstCalculatorBrain.gstAmount;
-  String totalAmount = _gstCalculatorBrain.grossAmount;
+  String totalAmount = _gstCalculatorBrain.totalAmount;
   // String gstOperator = _gstCalculatorBrain.gstOperator();
   String csgstRate = _gstCalculatorBrain.csgstRate;
   String igstRate = _gstCalculatorBrain.igstRate;
@@ -352,7 +353,7 @@ class _GSTTipState extends State<GSTTip> {
           child: Column(
             children: [
               customTipRow(
-                title: 'CGST&SGST',
+                title: 'CGST&SGST\n(Intra-State)',
                 tip: csgstTip,
                 color: kGSTSummaryRowBackground1,
                 borderRadius: BorderRadius.only(
@@ -361,7 +362,7 @@ class _GSTTipState extends State<GSTTip> {
                 ),
               ),
               customTipRow(
-                title: 'IGST',
+                title: 'IGST\n(Inter-State)',
                 tip: igstTip,
                 color: kGSTSummaryRowBackground2,
                 borderRadius: BorderRadius.only(

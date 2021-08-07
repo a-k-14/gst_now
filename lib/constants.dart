@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 // This file is to store the constants for the app
 
-Color? kAccentColor = Colors.blueAccent[400];
+Color? kAccentColor = Color(0xff0069e0);
 
 Color? kGrey300 = Colors.grey[300];
 Color? kGrey350 = Colors.grey[350];
@@ -36,7 +36,10 @@ TextStyle kGSTSummaryBreakupTextStyle = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
-String csgstTip =
-    'Charged when the address of the customer is in same state as your GST registered address.\n\nSGST is also referred as UTGST.';
+String csgstTip = """
+Charged when the address of the customer is in same state as your GST registered address.
+
+SGST is also referred as UTGST.
+    """;
 String igstTip =
     'Charged when the address of the customer is in a different state than your GST registered address.';

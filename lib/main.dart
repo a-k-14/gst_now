@@ -44,6 +44,10 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
+
     return GestureDetector(
       // To enable tap anywhere to dismiss keyboard
       // If we wrap this around body of Scaffold, it does not dismiss keyboard when we tap on some places
@@ -59,9 +63,10 @@ class Home extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text(title, style: TextStyle(color: Colors.black)),
+            title: Text(title),
             elevation: 0,
-            backgroundColor: Colors.white,
+            brightness: Brightness.dark,
+            backgroundColor: Color(0xff0069e0),
           ),
           body: GSTCalculatorPage(),
         ),
@@ -96,7 +101,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // We call setState so that everytime initial value changes, controller will trigger changes like calling compute method
       setState(() {
         // To get updated results everytime initialValue changes
-        _gstCalculatorBrain.baseValueText = baseValueController.text;
+        _gstCalculatorBrain.baseAmountText = baseValueController.text;
         _gstCalculatorBrain.compute();
       });
     });
@@ -158,15 +163,17 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.fromLTRB(8, 10, 10, 4),
+            margin: EdgeInsets.only(top: kPadding, bottom: kPadding * 2),
+            padding: EdgeInsets.fromLTRB(10, 12, 10, 4),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(kBorderRadius - 4),
+              borderRadius: BorderRadius.circular(kBorderRadius - 2),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x1F000000),
+                  color: Color(0x1A000000),
                   // offset: Offset(0, 2),
                   blurRadius: kBorderRadius,
+                  spreadRadius: 0,
                 ),
               ],
             ),
@@ -178,7 +185,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       // To ensure Initial Value and GST Rate take same width
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
-                        'Base Value',
+                        'Base Amount',
                         style: TextStyle(
                           fontSize: kTextSize,
                         ),
@@ -204,7 +211,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                           isDense: true,
                           contentPadding:
                               EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          hintText: 'Enter Value...',
+                          hintText: 'Enter Amount...',
                           hintStyle: TextStyle(
                             fontSize: kTextSize - 1,
                             color: kGrey300,
@@ -273,7 +280,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                   ],
                 ),
                 GSTRateButton(
-                    gstRatesList: ['1', '3', '5', '12', '28'],
+                    gstRatesList: ['1', '3', '5', '12', '18', '28'],
                     onTap: gstRateSetter),
                 Align(
                   alignment: Alignment.centerRight,
@@ -293,7 +300,6 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               ],
             ),
           ),
-          SizedBox(height: kSizedBoxHeight + 8),
           GSTOperatorTab(
             operatorValues: ['+ Add GST', '- Less GST'],
             f: updateGSTOperator,
