@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For using RegExp
+import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'custom_widgets.dart';
 import 'gst_calculator_brain.dart';
@@ -63,10 +64,17 @@ class Home extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text(title),
+            title: Text(
+              title,
+              style: TextStyle(
+                color: Color(0xffebf1ff),
+                //  0xffebf1ff
+              ),
+            ),
             elevation: 0,
             brightness: Brightness.dark,
-            backgroundColor: Color(0xff0069e0),
+            backgroundColor: Color(0xff0050ab),
+            //   0xff0069e0 0xff328ce6 0xff0055ab
           ),
           body: GSTCalculatorPage(),
         ),
@@ -88,6 +96,19 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   final TextEditingController baseValueController = TextEditingController();
   // To set the value in GST Rate text field on click of GST Rate Button
   final TextEditingController gstRateController = TextEditingController();
+
+  List<double> gstRatesList = [1, 3, 5, 12, 18, 28];
+  // To set the sort icon color
+  bool isGSTRatesListReverse = false;
+
+  void _loadIsReversedValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isGSTRatesListReverse = (prefs.getBool('IsReversedValue') ?? false);
+      gstRatesList =
+          isGSTRatesListReverse ? gstRatesList.reversed.toList() : gstRatesList;
+    });
+  }
 
   // Instance of GST Calculator Brain to perform calculations and get results
   static GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
@@ -113,6 +134,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
         _gstCalculatorBrain.compute();
       });
     });
+    _loadIsReversedValue();
     super.initState();
   }
 
@@ -122,6 +144,14 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     baseValueController.dispose();
     gstRateController.dispose();
     super.dispose();
+  }
+
+  void _setIsReversedValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isGSTRatesListReverse = !isGSTRatesListReverse;
+      prefs.setBool('IsReversedValue', isGSTRatesListReverse);
+    });
   }
 
   // To set the gstRate into its TextField on click of GST Rate buttons
@@ -281,22 +311,42 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ),
                   ],
                 ),
-                GSTRateButton(
-                    gstRatesList: [1, 3, 5, 12, 18, 28], onTap: gstRateSetter),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: kAccentColor,
+                GSTRateButton(gstRatesList: gstRatesList, onTap: gstRateSetter),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      tooltip: 'Reverse GST Rates order',
+                      // splash is shown behind container. To avoid that we set this
+                      splashRadius: 1,
+                      icon: Icon(
+                        Icons.swap_horiz_rounded,
+                        color: isGSTRatesListReverse
+                            ? kAccentColor
+                            : Colors.grey[350],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          gstRatesList = gstRatesList.reversed.toList();
+                          _setIsReversedValue();
+                          print(isGSTRatesListReverse);
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        baseValueController.clear();
-                        gstRateController.clear();
-                      });
-                    },
-                    child: Text('Clear All'),
-                  ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        primary: kAccentColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          baseValueController.clear();
+                          gstRateController.clear();
+                        });
+                      },
+                      child: Text('Clear All'),
+                    ),
+                  ],
                 ),
               ],
             ),

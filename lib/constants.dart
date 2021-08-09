@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 // This file is to store the constants for the app
 
-Color? kAccentColor = Color(0xff0069e0);
+Color? kAccentColor = Color(0xff0050ab);
 
 Color? kGrey300 = Colors.grey[300];
 Color? kGrey350 = Colors.grey[350];
