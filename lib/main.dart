@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For using RegExp
+import 'package:flutter/services.dart'; // For Transparent status bar in SystemChrome
+import 'package:gst_calc/about.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'custom_widgets.dart';
@@ -32,7 +33,6 @@ class MyApp extends StatelessWidget {
           // This is the theme of application.
           // primarySwatch: Colors.blueGrey,
           ),
-      // home: Test(),
       home: Home(title: title),
     );
   }
@@ -67,7 +67,7 @@ class Home extends StatelessWidget {
             title: Text(
               title,
               style: TextStyle(
-                color: Color(0xffebf1ff),
+                color: kAppBarContentColor,
                 //  0xffebf1ff
               ),
             ),
@@ -75,6 +75,34 @@ class Home extends StatelessWidget {
             brightness: Brightness.dark,
             backgroundColor: Color(0xff0050ab),
             //   0xff0069e0 0xff328ce6 0xff0055ab
+            actions: [
+              IconButton(
+                tooltip: 'Help & About',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutPage(),
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.info_outline_rounded,
+                  color: kAppBarContentColor,
+                ),
+              ),
+              IconButton(
+                tooltip: 'Share App',
+                iconSize: 22,
+                onPressed: () {
+                  shareApp();
+                },
+                icon: Icon(
+                  Icons.share_rounded,
+                  color: kAppBarContentColor,
+                ),
+              ),
+            ],
           ),
           body: GSTCalculatorPage(),
         ),
@@ -101,10 +129,14 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // To set the sort icon color
   bool isGSTRatesListReverse = false;
 
+  // To get the stored setting value for isGSTRatesListReverse and if null, then assign false to it
   void _loadIsReversedValue() async {
+    // Instance of SharedPreference
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      // Get IsReversedValue and if null assign false to isGSTRatesListReverse
       isGSTRatesListReverse = (prefs.getBool('IsReversedValue') ?? false);
+      // Order GST Rates based on isGSTRatesListReverse obtained above
       gstRatesList =
           isGSTRatesListReverse ? gstRatesList.reversed.toList() : gstRatesList;
     });
@@ -134,6 +166,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
         _gstCalculatorBrain.compute();
       });
     });
+    // To get the order of GST Rates list
     _loadIsReversedValue();
     super.initState();
   }
@@ -146,10 +179,15 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     super.dispose();
   }
 
+  // To store setting value for isGSTRatesListReverse to be used when app is opened next time
+  // This is called everytime the swap icon button below GST Rates buttons is clicked
   void _setIsReversedValue() async {
+    // Instance of SharedPreference
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      // Change the isGSTRatesListReverse value to opposite on click of swap icon button
       isGSTRatesListReverse = !isGSTRatesListReverse;
+      // store the isGSTRatesListReverse value against IsReversedValue to be used when app is opened next time
       prefs.setBool('IsReversedValue', isGSTRatesListReverse);
     });
   }
@@ -157,13 +195,14 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // To set the gstRate into its TextField on click of GST Rate buttons
   // r is the rate of the respective GST Rate button
   gstRateSetter(double r) {
-    // We use offset to avoid cursor moving to the beginning of the TextField
+    // We use offset to avoid cursor moving to the beginning of the TextField after setting the rate
     gstRateController.value = TextEditingValue(
       text: r.toString(),
       selection: TextSelection.fromPosition(
         TextPosition(offset: r.toString().length),
       ),
     );
+    // To dismiss keyboard on click of GST Rate Button
     FocusScope.of(context).unfocus();
   }
 
@@ -174,6 +213,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // To get updated results everytime gstOperator changes
       _gstCalculatorBrain.compute();
     });
+    // To dismiss keyboard on click of GST Operator Tab
     FocusScope.of(context).unfocus();
   }
 
@@ -194,8 +234,9 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       padding: EdgeInsets.all(kPadding),
       child: Column(
         children: [
+          // This contains - Base Amount, GST Rate, GST Rate Buttons, swap & Clear All
           Container(
-            margin: EdgeInsets.only(top: kPadding, bottom: kPadding * 2),
+            margin: EdgeInsets.only(top: kPadding - 3, bottom: kPadding * 2),
             padding: EdgeInsets.fromLTRB(10, 12, 10, 4),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -224,39 +265,10 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       ),
                     ),
                     Expanded(
-                      child: TextField(
+                      child: customTextField(
                         controller: baseValueController,
-                        // TODO: We use numberWithOptions as iOS may not provide decimal with just number
-                        keyboardType:
-                            TextInputType.numberWithOptions(decimal: true),
-                        cursorHeight: 22,
-                        cursorColor: kAccentColor,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(kRegexpValue),
-                          ),
-                          // To limit the number of digits
-                          // We can use 'maxLength' & 'counterText' alternatively
-                          LengthLimitingTextInputFormatter(12),
-                        ],
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          hintText: 'Enter Amount...',
-                          hintStyle: TextStyle(
-                            fontSize: kTextSize - 1,
-                            color: kGrey300,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: kGrey350!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kAccentColor!),
-                          ),
-                        ),
+                        hintText: 'Enter Amount...',
+                        inputLength: 12,
                       ),
                     ),
                   ],
@@ -272,42 +284,11 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       ),
                     ),
                     Expanded(
-                      child: TextField(
-                        // To set the value on click of GST Rate Button
-                        controller: gstRateController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(kRegexpValue),
-                          ),
-                          // To limit the number of digits
-                          LengthLimitingTextInputFormatter(9),
-                        ],
-                        cursorHeight: 22,
-                        cursorColor: kAccentColor,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      child: customTextField(
+                          controller: gstRateController,
                           hintText: 'Enter Rate...',
-                          hintStyle: TextStyle(
-                            fontSize: kTextSize - 1,
-                            color: kGrey300,
-                          ),
-                          suffix: Text(
-                            '%',
-                            style: TextStyle(color: kAccentColor),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: kGrey350!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kAccentColor!),
-                          ),
-                        ),
-                      ),
+                          inputLength: 9,
+                          suffix: '%'),
                     ),
                   ],
                 ),
@@ -323,20 +304,17 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       icon: Icon(
                         Icons.swap_horiz_rounded,
                         color: isGSTRatesListReverse
-                            ? kAccentColor
+                            ? kMainColor
                             : Colors.grey[350],
                       ),
                       onPressed: () {
-                        setState(() {
-                          gstRatesList = gstRatesList.reversed.toList();
-                          _setIsReversedValue();
-                          print(isGSTRatesListReverse);
-                        });
+                        gstRatesList = gstRatesList.reversed.toList();
+                        _setIsReversedValue();
                       },
                     ),
                     TextButton(
                       style: TextButton.styleFrom(
-                        primary: kAccentColor,
+                        primary: kMainColor,
                       ),
                       onPressed: () {
                         setState(() {
