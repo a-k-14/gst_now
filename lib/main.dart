@@ -30,9 +30,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       theme: ThemeData(
-          // This is the theme of application.
-          // primarySwatch: Colors.blueGrey,
-          ),
+        // This is the theme of application.
+        // primarySwatch: Colors.blueGrey,
+        appBarTheme: AppBarTheme(
+          // To set the action icons & back button color
+          iconTheme: IconThemeData(color: kAppBarContentColor),
+        ),
+      ),
       home: Home(title: title),
     );
   }
@@ -86,10 +90,7 @@ class Home extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(
-                  Icons.info_outline_rounded,
-                  color: kAppBarContentColor,
-                ),
+                icon: Icon(Icons.info_outline_rounded),
               ),
               IconButton(
                 tooltip: 'Share App',
@@ -97,10 +98,7 @@ class Home extends StatelessWidget {
                 onPressed: () {
                   shareApp();
                 },
-                icon: Icon(
-                  Icons.share_rounded,
-                  color: kAppBarContentColor,
-                ),
+                icon: Icon(Icons.share_rounded),
               ),
             ],
           ),

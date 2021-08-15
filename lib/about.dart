@@ -23,10 +23,7 @@ class AboutPage extends StatelessWidget {
             onPressed: () {
               shareApp();
             },
-            icon: Icon(
-              Icons.share_rounded,
-              color: Color(0xffebf4ff),
-            ),
+            icon: Icon(Icons.share_rounded),
           ),
         ],
       ),
@@ -86,7 +83,8 @@ class AboutPage extends StatelessWidget {
                     height: 35,
                   ),
                 ),
-                // SizedBox(width: kSizedBoxHeight),
+                // Added this SizedBox so that the 2 TextButtons have some space on browser
+                SizedBox(width: 5),
                 TextButton(
                   onPressed: () {
                     launchURL(url: kAppStoreURL);
