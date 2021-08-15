@@ -85,6 +85,7 @@ class GSTRateButton extends StatelessWidget {
                 width: 65,
                 height: 40,
                 // Space between the buttons
+                // TODO: The bottom shadow of the buttons is not visible. If we give bottom margin we can see it.
                 margin: EdgeInsets.only(right: 6),
                 child: ElevatedButton(
                   child: Text(
@@ -449,7 +450,16 @@ class _GSTTipState extends State<GSTTip> {
 // To open the link on click of button
 void launchURL({required String url}) async {
   if (await (canLaunch(url))) {
-    await launch(url);
+    await launch(
+      url,
+      /*
+      By default URL is opened in SafariViewController and the problem is that the status bar content - time, network etc. are in white and
+      there seems no way to change that. To avoid this, we set 'forceSafariVC: false' so that URL is opened in safari browser and we will not have these status bar content in white color issues.
+      There seems to be error with URL launcher package.
+      TODO: check if the above error is resolved for url_launcher package
+      */
+      forceSafariVC: false,
+    );
   } else {
     throw 'Cannot connect. Please try again.';
   }
