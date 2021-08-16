@@ -14,6 +14,7 @@ Widget customTextField({
   required TextEditingController controller,
   required String hintText,
   required int inputLength,
+  required bool largeScreen,
   String? suffix,
 }) {
   return TextField(
@@ -32,7 +33,8 @@ Widget customTextField({
     cursorHeight: 22,
     cursorColor: kMainColor,
     decoration: InputDecoration(
-      isDense: true,
+      // Dense only if large screen (width > 600)
+      isDense: largeScreen ? false : true,
       contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       hintText: hintText,
       hintStyle: TextStyle(
@@ -117,10 +119,14 @@ class GSTRateButton extends StatelessWidget {
 class GSTOperatorTab extends StatefulWidget {
   // The operator values like Add/Less GST or CGST&SGST/IGST
   final List<String> operatorValues;
+  final bool largeScreen;
   // The function to send the gstOperator/gstBreakupOperator value to GST Calculator Brain
   final Function f;
 
-  GSTOperatorTab({required this.operatorValues, required this.f});
+  GSTOperatorTab(
+      {required this.operatorValues,
+      required this.largeScreen,
+      required this.f});
 
   @override
   _GSTOperatorTabState createState() => _GSTOperatorTabState();
@@ -133,7 +139,8 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
   Widget build(BuildContext context) {
     return Container(
       // Container is to enforce width
-      width: MediaQuery.of(context).size.width * 0.93,
+      width:
+          MediaQuery.of(context).size.width * (widget.largeScreen ? 0.5 : 0.93),
       // Edited const double _kMinSegmentedControlHeight = 40.0; default value is - 28.0 in the default files
       child: CupertinoSlidingSegmentedControl(
         groupValue: segmentedControlGroupValue,

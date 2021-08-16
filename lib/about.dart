@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gst_calc/constants.dart';
 import 'package:gst_calc/custom_widgets.dart';
+import 'package:flutter/cupertino.dart';
 
 class AboutPage extends StatelessWidget {
+  final ScrollController scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
+    // To set the size of help.png & scroll bar visibility
+    final bool largeScreen =
+        MediaQuery.of(context).size.width > largeScreenWidth;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -36,14 +43,23 @@ class AboutPage extends StatelessWidget {
               'Thank you for checking the app. Here is a quick guide:\n',
               style: aboutPageTextStyle,
             ),
+            // Align is to center help.png on bigger screens like ipad or browser
             Align(
               alignment: Alignment.center,
               child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: 600,
-                  maxWidth: 600,
+                height: largeScreen ? 550 : 400,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(kBorderRadius),
+                  border: Border.all(color: Colors.grey.shade100),
                 ),
-                child: Image.asset('images/help.png'),
+                child: CupertinoScrollbar(
+                  isAlwaysShown: largeScreen ? false : true,
+                  controller: scrollController,
+                  child: SingleChildScrollView(
+                      controller: scrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Image.asset('images/help.png')),
+                ),
               ),
             ),
             Divider(height: 30),

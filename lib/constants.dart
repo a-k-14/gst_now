@@ -12,6 +12,9 @@ double kGSTSummaryBorderRadius = 6;
 double kSizedBoxHeight = 10;
 
 double kTextSize = 16;
+double kLargeScreenTextSize = kTextSize + 4;
+
+double largeScreenWidth = 600;
 
 // Overall padding and padding in between the widgets
 double kPadding = 10;

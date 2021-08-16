@@ -227,6 +227,10 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   @override
   // This method is rerun every time setState is called
   Widget build(BuildContext context) {
+    // To set the TextFields dense value
+    final bool largeScreen =
+        MediaQuery.of(context).size.width > largeScreenWidth;
+
     return SingleChildScrollView(
       // SCS is added to avoid overflow error when keyboard is shown
       padding: EdgeInsets.all(kPadding),
@@ -258,7 +262,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       child: Text(
                         'Base Amount',
                         style: TextStyle(
-                          fontSize: kTextSize,
+                          fontSize:
+                              largeScreen ? kLargeScreenTextSize : kTextSize,
                         ),
                       ),
                     ),
@@ -267,6 +272,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                         controller: baseValueController,
                         hintText: 'Enter Amount...',
                         inputLength: 12,
+                        largeScreen: largeScreen,
                       ),
                     ),
                   ],
@@ -278,15 +284,20 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
                         'GST Rate',
-                        style: TextStyle(fontSize: kTextSize),
+                        style: TextStyle(
+                          fontSize:
+                              largeScreen ? kLargeScreenTextSize : kTextSize,
+                        ),
                       ),
                     ),
                     Expanded(
                       child: customTextField(
-                          controller: gstRateController,
-                          hintText: 'Enter Rate...',
-                          inputLength: 9,
-                          suffix: '%'),
+                        controller: gstRateController,
+                        hintText: 'Enter Rate...',
+                        inputLength: 9,
+                        largeScreen: largeScreen,
+                        suffix: '%',
+                      ),
                     ),
                   ],
                 ),
@@ -329,6 +340,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           ),
           GSTOperatorTab(
             operatorValues: ['+ Add GST', '- Less GST'],
+            largeScreen: largeScreen,
             f: updateGSTOperator,
           ),
           SizedBox(height: kSizedBoxHeight),
@@ -336,6 +348,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
             operatorValues: ['CGST & SGST', 'IGST'],
+            largeScreen: largeScreen,
             f: updateGSTBreakupOperator,
           ),
           GSTTip(),
