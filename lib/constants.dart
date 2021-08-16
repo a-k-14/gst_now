@@ -12,7 +12,7 @@ double kGSTSummaryBorderRadius = 6;
 double kSizedBoxHeight = 10;
 
 double kTextSize = 16;
-double kLargeScreenTextSize = kTextSize + 4;
+double kLargeScreenTextSize = kTextSize + 2;
 
 double largeScreenWidth = 600;
 
