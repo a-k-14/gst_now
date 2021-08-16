@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For using RegExp
+import 'package:flutter/services.dart'; // For Transparent status bar in SystemChrome
+import 'package:gst_calc/about.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'custom_widgets.dart';
 import 'gst_calculator_brain.dart';
@@ -9,11 +11,10 @@ NOTE:
 1. Initial Value - 12 digits incl decimal separator and 2 digits after decimal
 1. GST Rate - 8 digits incl decimal separator and 2 digits after decimal
 TODO: decimals precision - how many and option to set by user
-1. keyboard type in iOS and number validations in iOS
-2. Suffix %
+1. Base Value to Base Amount
+2.
 3. default rate
 4. edit rates and change the order
-5. Round icons in emulator
 */
 
 void main() => runApp(MyApp());
@@ -29,10 +30,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       theme: ThemeData(
-          // This is the theme of application.
-          // primarySwatch: Colors.blueGrey,
-          ),
-      // home: Test(),
+        // This is the theme of application.
+        // primarySwatch: Colors.blueGrey,
+        appBarTheme: AppBarTheme(
+          // To set the action icons & back button color
+          iconTheme: IconThemeData(color: kAppBarContentColor),
+        ),
+      ),
       home: Home(title: title),
     );
   }
@@ -45,6 +49,10 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
+
     return GestureDetector(
       // To enable tap anywhere to dismiss keyboard
       // If we wrap this around body of Scaffold, it does not dismiss keyboard when we tap on some places
@@ -60,9 +68,39 @@ class Home extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text(title, style: TextStyle(color: Colors.black)),
+            title: Text(
+              title,
+              style: TextStyle(
+                color: kAppBarContentColor,
+                //  0xffebf1ff
+              ),
+            ),
             elevation: 0,
-            backgroundColor: Colors.white,
+            brightness: Brightness.dark,
+            backgroundColor: Color(0xff0050ab),
+            //   0xff0069e0 0xff328ce6 0xff0055ab
+            actions: [
+              IconButton(
+                tooltip: 'Help & About',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutPage(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.info_outline_rounded),
+              ),
+              IconButton(
+                tooltip: 'Share App',
+                iconSize: 22,
+                onPressed: () {
+                  shareApp();
+                },
+                icon: Icon(Icons.share_rounded),
+              ),
+            ],
           ),
           body: GSTCalculatorPage(),
         ),
@@ -85,6 +123,23 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // To set the value in GST Rate text field on click of GST Rate Button
   final TextEditingController gstRateController = TextEditingController();
 
+  List<double> gstRatesList = [1, 3, 5, 12, 18, 28];
+  // To set the sort icon color
+  bool isGSTRatesListReverse = false;
+
+  // To get the stored setting value for isGSTRatesListReverse and if null, then assign false to it
+  void _loadIsReversedValue() async {
+    // Instance of SharedPreference
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // Get IsReversedValue and if null assign false to isGSTRatesListReverse
+      isGSTRatesListReverse = (prefs.getBool('IsReversedValue') ?? false);
+      // Order GST Rates based on isGSTRatesListReverse obtained above
+      gstRatesList =
+          isGSTRatesListReverse ? gstRatesList.reversed.toList() : gstRatesList;
+    });
+  }
+
   // Instance of GST Calculator Brain to perform calculations and get results
   static GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
       // initialValue: initialValueController,
@@ -97,7 +152,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // We call setState so that everytime initial value changes, controller will trigger changes like calling compute method
       setState(() {
         // To get updated results everytime initialValue changes
-        _gstCalculatorBrain.baseValueText = baseValueController.text;
+        _gstCalculatorBrain.baseAmountText = baseValueController.text;
         _gstCalculatorBrain.compute();
       });
     });
@@ -109,6 +164,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
         _gstCalculatorBrain.compute();
       });
     });
+    // To get the order of GST Rates list
+    _loadIsReversedValue();
     super.initState();
   }
 
@@ -120,16 +177,31 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     super.dispose();
   }
 
+  // To store setting value for isGSTRatesListReverse to be used when app is opened next time
+  // This is called everytime the swap icon button below GST Rates buttons is clicked
+  void _setIsReversedValue() async {
+    // Instance of SharedPreference
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // Change the isGSTRatesListReverse value to opposite on click of swap icon button
+      isGSTRatesListReverse = !isGSTRatesListReverse;
+      // store the isGSTRatesListReverse value against IsReversedValue to be used when app is opened next time
+      prefs.setBool('IsReversedValue', isGSTRatesListReverse);
+    });
+  }
+
   // To set the gstRate into its TextField on click of GST Rate buttons
   // r is the rate of the respective GST Rate button
   gstRateSetter(double r) {
-    // We use offset to avoid cursor moving to the beginning of the TextField
+    // We use offset to avoid cursor moving to the beginning of the TextField after setting the rate
     gstRateController.value = TextEditingValue(
       text: r.toString(),
       selection: TextSelection.fromPosition(
         TextPosition(offset: r.toString().length),
       ),
     );
+    // To dismiss keyboard on click of GST Rate Button
+    FocusScope.of(context).unfocus();
   }
 
   // To trigger gstOperator changes: 0 - Add GST / 1 - Less GST
@@ -139,6 +211,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // To get updated results everytime gstOperator changes
       _gstCalculatorBrain.compute();
     });
+    // To dismiss keyboard on click of GST Operator Tab
+    FocusScope.of(context).unfocus();
   }
 
   // To trigger gstBreakupOperator changes: 0 - CGST&SGST / 1 - IGST
@@ -153,21 +227,28 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   @override
   // This method is rerun every time setState is called
   Widget build(BuildContext context) {
+    // To set the TextFields dense value
+    final bool largeScreen =
+        MediaQuery.of(context).size.width > largeScreenWidth;
+
     return SingleChildScrollView(
       // SCS is added to avoid overflow error when keyboard is shown
       padding: EdgeInsets.all(kPadding),
       child: Column(
         children: [
+          // This contains - Base Amount, GST Rate, GST Rate Buttons, swap & Clear All
           Container(
-            padding: EdgeInsets.fromLTRB(8, 10, 10, 4),
+            margin: EdgeInsets.only(top: kPadding - 3, bottom: kPadding * 2),
+            padding: EdgeInsets.fromLTRB(10, 12, 10, 4),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(kBorderRadius - 4),
+              borderRadius: BorderRadius.circular(kBorderRadius - 2),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x1F000000),
+                  color: Color(0x1A000000),
                   // offset: Offset(0, 2),
                   blurRadius: kBorderRadius,
+                  spreadRadius: 0,
                 ),
               ],
             ),
@@ -179,46 +260,19 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       // To ensure Initial Value and GST Rate take same width
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
-                        'Base Value',
+                        'Base Amount',
                         style: TextStyle(
-                          fontSize: kTextSize,
+                          fontSize:
+                              largeScreen ? kLargeScreenTextSize : kTextSize,
                         ),
                       ),
                     ),
                     Expanded(
-                      child: TextField(
+                      child: customTextField(
                         controller: baseValueController,
-                        // TODO: We use numberWithOptions as iOS may not provide decimal with just number
-                        keyboardType:
-                            TextInputType.numberWithOptions(decimal: true),
-                        cursorHeight: 22,
-                        cursorColor: kAccentColor,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(kRegexpValue),
-                          ),
-                          // To limit the number of digits
-                          // We can use 'maxLength' & 'counterText' alternatively
-                          LengthLimitingTextInputFormatter(12),
-                        ],
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          hintText: 'Enter Value...',
-                          hintStyle: TextStyle(
-                            fontSize: kTextSize - 1,
-                            color: kGrey300,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: kGrey350!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kAccentColor!),
-                          ),
-                        ),
+                        hintText: 'Enter Amount...',
+                        inputLength: 12,
+                        largeScreen: largeScreen,
                       ),
                     ),
                   ],
@@ -230,112 +284,63 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
                         'GST Rate',
-                        style: TextStyle(fontSize: kTextSize),
+                        style: TextStyle(
+                          fontSize:
+                              largeScreen ? kLargeScreenTextSize : kTextSize,
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: TextField(
-                        // To set the value on click of GST Rate Button
+                      child: customTextField(
                         controller: gstRateController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(kRegexpValue),
-                          ),
-                          // To limit the number of digits
-                          LengthLimitingTextInputFormatter(9),
-                        ],
-                        cursorHeight: 22,
-                        cursorColor: kAccentColor,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          hintText: 'Enter Rate...',
-                          hintStyle: TextStyle(
-                            fontSize: kTextSize - 1,
-                            color: kGrey300,
-                          ),
-                          suffix: Text(
-                            '%',
-                            style: TextStyle(color: kAccentColor),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: kGrey350!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: kAccentColor!),
-                          ),
-                        ),
+                        hintText: 'Enter Rate...',
+                        inputLength: 9,
+                        largeScreen: largeScreen,
+                        suffix: '%',
                       ),
                     ),
                   ],
                 ),
-                Container(
-                  // Contains the SCS with GST Rate Buttons
-                  padding: EdgeInsets.all(kPadding - 4),
-                  margin: EdgeInsets.only(top: 5),
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(22, 118, 118, 128),
-                    borderRadius: BorderRadius.circular(kBorderRadius),
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        GSTRateButton(
-                          rate: '1%',
-                          onTap: () {
-                            return gstRateSetter(1);
-                          },
-                        ),
-                        GSTRateButton(
-                          rate: '3%',
-                          onTap: () => gstRateSetter(3),
-                        ),
-                        GSTRateButton(
-                          rate: '5%',
-                          onTap: () => gstRateSetter(5),
-                        ),
-                        GSTRateButton(
-                          rate: '12%',
-                          onTap: () => gstRateSetter(12),
-                        ),
-                        GSTRateButton(
-                          rate: '18%',
-                          onTap: () => gstRateSetter(18),
-                        ),
-                        GSTRateButton(
-                          rate: '28%',
-                          onTap: () => gstRateSetter(28),
-                        ),
-                      ],
+                GSTRateButton(gstRatesList: gstRatesList, onTap: gstRateSetter),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      tooltip: 'Reverse GST Rates order',
+                      // splash is shown behind container. To avoid that we set this
+                      splashRadius: 1,
+                      icon: Icon(
+                        Icons.swap_horiz_rounded,
+                        color: isGSTRatesListReverse
+                            ? kMainColor
+                            : Colors.grey[350],
+                      ),
+                      onPressed: () {
+                        gstRatesList = gstRatesList.reversed.toList();
+                        _setIsReversedValue();
+                      },
                     ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: kAccentColor,
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        primary: kMainColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          baseValueController.clear();
+                          gstRateController.clear();
+                        });
+                      },
+                      child: Text('Clear All'),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        baseValueController.clear();
-                        gstRateController.clear();
-                      });
-                    },
-                    child: Text('Clear All'),
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
-          SizedBox(height: kSizedBoxHeight + 8),
           GSTOperatorTab(
             operatorValues: ['+ Add GST', '- Less GST'],
+            largeScreen: largeScreen,
             f: updateGSTOperator,
           ),
           SizedBox(height: kSizedBoxHeight),
@@ -343,6 +348,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
             operatorValues: ['CGST & SGST', 'IGST'],
+            largeScreen: largeScreen,
             f: updateGSTBreakupOperator,
           ),
           GSTTip(),

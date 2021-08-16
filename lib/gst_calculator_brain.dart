@@ -15,9 +15,9 @@ import 'package:intl/intl.dart';
 
 class GSTCalculatorBrain {
   // TODO: should I use final here
-  String baseValueText = '';
+  String baseAmountText = '';
 
-  /// <TextEditingController for GST Rate>
+  /// <GST Rate Text>
   String gstRateText = '';
 
   // GSTCalculatorBrain({required this.initialValue, required this.gstRate});
@@ -50,7 +50,7 @@ class GSTCalculatorBrain {
 
   /// <Total GST Amount to be returned>
   String gstAmount = '';
-  String grossAmount = '';
+  String totalAmount = '';
 
   // gstAmount breakup
   String csgstAmount = '';
@@ -93,7 +93,7 @@ class GSTCalculatorBrain {
     // String gstRateText = gstRate.text;
 
     // A
-    if (baseValueText.isEmpty || gstRateText.isEmpty) {
+    if (baseAmountText.isEmpty || gstRateText.isEmpty) {
       // As the rate value is not dependent on gstOperator (Add/Less GST),
       // we set its value here instead of twice in the following if and then in else statements
       // We store GST Rate as a number to use for calculating CGST&SGST/IGST rates & amounts
@@ -104,15 +104,18 @@ class GSTCalculatorBrain {
 
       if (gstOperatorValue == 0) {
         // Add GST case
-        netAmount = baseValueText.isEmpty ? '' : formatter(baseValueText);
+        netAmount = baseAmountText.isEmpty ? '' : formatter(baseAmountText);
 
-        grossAmount = '';
+        totalAmount = '';
       } else {
         // Less GST case
         netAmount = '';
 
-        grossAmount = baseValueText.isEmpty ? '' : formatter(baseValueText);
+        totalAmount = baseAmountText.isEmpty ? '' : formatter(baseAmountText);
       }
+
+      // We are setting _gstAmountDouble as 0 because, when the B executes and we clear all, then the _gstAmountDouble value will be earlier calculated value and this results in CGST, IGST amount variables having last step results as their value are based on _gstAmountDouble. So to clear them we set this as 0
+      _gstAmountDouble = 0;
 
       // As either initialValue or gstRate will be empty we cannot calculate the gstAmount
       gstAmount = '';
@@ -128,24 +131,24 @@ class GSTCalculatorBrain {
 
       if (gstOperatorValue == 0) {
         // Add GST case
-        netAmount = formatter(baseValueText);
+        netAmount = formatter(baseAmountText);
 
         // We store GST Amount as a number to use for calculating CGST&SGST/IGST
-        _gstAmountDouble = double.parse(baseValueText) * _rateDouble / 100;
+        _gstAmountDouble = double.parse(baseAmountText) * _rateDouble / 100;
         // The we set the gstAmount value using the double above
         gstAmount = f.format(_gstAmountDouble);
 
-        grossAmount = f.format(double.parse(baseValueText) + _gstAmountDouble);
+        totalAmount = f.format(double.parse(baseAmountText) + _gstAmountDouble);
       } else {
         // Less GST case
-        grossAmount = formatter(baseValueText);
+        totalAmount = formatter(baseAmountText);
 
         _gstAmountDouble =
-            double.parse(baseValueText) * (_rateDouble / (_rateDouble + 100));
+            double.parse(baseAmountText) * (_rateDouble / (_rateDouble + 100));
 
         gstAmount = f.format(_gstAmountDouble);
 
-        netAmount = f.format(double.parse(baseValueText) - _gstAmountDouble);
+        netAmount = f.format(double.parse(baseAmountText) - _gstAmountDouble);
       }
     }
     // Here we set the CGST&SGST/IGST rates and amounts
@@ -181,10 +184,10 @@ class GSTCalculatorBrain {
     }
   }
 
-  // To return the GST Operator - Add GST for 0 and Less GST for 1
+/*  // To return the GST Operator - Add GST for 0 and Less GST for 1
   String gstOperator() {
     return gstOperatorValue == 0 ? 'Add GST' : 'Less GST';
-  }
+  }*/
 
   // To return the GST Operator - Add GST for 0 and Less GST for 1
   String gstBreakupOperator() {

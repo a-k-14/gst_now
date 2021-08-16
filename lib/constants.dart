@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 // This file is to store the constants for the app
 
-Color? kAccentColor = Colors.blueAccent[400];
-
-Color? kGrey300 = Colors.grey[300];
-Color? kGrey350 = Colors.grey[350];
-
-// To enforce validation on TextFields
-// To allow decimal point only once and up to 2 decimal places
-// To deny space
-String kRegexpValue = r'(^(\d{1,})\.?(\d{0,2}))';
+Color? kMainColor = Color(0xff0050ab);
+Color kAppBarContentColor = Color(0xffebf4ff);
 
 double kBorderRadius = 8;
 double kGSTSummaryBorderRadius = 6;
@@ -18,6 +12,9 @@ double kGSTSummaryBorderRadius = 6;
 double kSizedBoxHeight = 10;
 
 double kTextSize = 16;
+double kLargeScreenTextSize = kTextSize + 2;
+
+double largeScreenWidth = 600;
 
 // Overall padding and padding in between the widgets
 double kPadding = 10;
@@ -36,7 +33,30 @@ TextStyle kGSTSummaryBreakupTextStyle = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
-String csgstTip =
-    'Charged when the address of the customer is in same state as your GST registered address.\n\nSGST is also referred as UTGST.';
+String csgstTip = """
+Charged when the address of the customer is in the same state as your GST registered address.
+
+SGST is also referred to as UTGST.
+    """;
 String igstTip =
     'Charged when the address of the customer is in a different state than your GST registered address.';
+
+TextStyle aboutPageTextStyle = TextStyle(
+  wordSpacing: 0.5,
+  fontSize: 15,
+  height: 1.25,
+  color: Colors.grey[800],
+);
+
+String kPlayStoreURL =
+    'https://play.google.com/store/apps/details?id=com.resoso.gst_now';
+String kAppStoreURL =
+    'https://apps.apple.com/us/app/gst-now-simple-gst-calculator/id1579338419';
+
+void shareApp() {
+  Share.share(
+    'Download GST Now - The simplest GST calculator app with CGST, SGST & IGST breakup!⚡'
+    '\n\nAndroid\n$kPlayStoreURL'
+    '\n\niOS\n$kAppStoreURL',
+  );
+}
