@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gst_calc/constants.dart';
 import 'package:gst_calc/custom_widgets.dart';
@@ -81,6 +83,9 @@ class AboutPage extends StatelessWidget {
                   style: aboutPageTextStyle,
                 ),
                 FlutterLogo(),
+                Platform.isIOS || Platform.isMacOS ?
+                  Text('and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
+                  :
                 Text(
                   'and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
                   style: aboutPageTextStyle,
@@ -88,6 +93,16 @@ class AboutPage extends StatelessWidget {
               ],
             ),
             SizedBox(height: kSizedBoxHeight - 5),
+            Platform.isIOS || Platform.isMacOS ?
+            ActionChip(
+              label: Text('Get it here'),
+              avatar: Icon(Icons.info_rounded, color: kMainColor),
+              backgroundColor: Color(0xffcce4ff),
+              onPressed: () {
+                launchURL(url: 'https://curiobeing.github.io/GSTNow.app/');
+              },
+            )
+            :
             Row(
               children: [
                 TextButton(
