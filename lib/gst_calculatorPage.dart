@@ -121,6 +121,31 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     });
   }
 
+  // --------------------
+  GSTCalcItem gstCalcItem = GSTCalcItem(
+    gstRate: '',
+    netAmount: '',
+    csgstRate: '',
+    csgstAmount: '',
+    totalAmount: '',
+    gstBreakupOperator: '',
+    gstAmount: '',
+  );
+
+  // This is to add a new item to the gstCalcList that is used to build gstTable
+  void addGSTCalcItem(GSTCalcItem data) {
+    setState(() {
+      gstCalcItem.updateGSTCalcList(data);
+    });
+  }
+
+  // This is to clear the gstCalcList and remove the gstTable rows
+  void clearGSTCalcList() {
+    setState(() {
+      gstCalcItem.clearGSTCalcList();
+    });
+  }
+
   @override
   // This method is rerun every time setState is called
   Widget build(BuildContext context) {
@@ -245,7 +270,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           gstSummary(
             gstCalculatorBrain: _gstCalculatorBrain,
             context: context,
-            largeScreen: wideScreen,
+            wideScreen: wideScreen,
+            addGSTCalcItem: addGSTCalcItem,
           ),
           // SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
@@ -253,7 +279,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             wideScreen: wideScreen,
             f: updateGSTBreakupOperator,
           ),
-          list(context),
+          gstTable(gstCalcItem.gstCalcList, clearGSTCalcList),
           GSTTip(),
         ],
       ),
