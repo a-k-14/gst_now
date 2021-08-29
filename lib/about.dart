@@ -6,13 +6,13 @@ import 'package:gst_calc/custom_widgets.dart';
 import 'package:flutter/cupertino.dart';
 
 class AboutPage extends StatelessWidget {
+  // To set the scroll bar visibility
   final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     // To set the size of help.png & scroll bar visibility
-    final bool largeScreen =
-        MediaQuery.of(context).size.width > largeScreenWidth;
+    final bool wideScreen = MediaQuery.of(context).size.width > wideScreenWidth;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +30,7 @@ class AboutPage extends StatelessWidget {
             tooltip: 'Share App',
             iconSize: 22,
             onPressed: () {
-              shareApp();
+              share(shareData: shareAppData);
             },
             icon: Icon(Icons.share_rounded),
           ),
@@ -49,13 +49,13 @@ class AboutPage extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Container(
-                height: largeScreen ? 550 : 400,
+                height: wideScreen ? 550 : 400,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(kBorderRadius),
                   border: Border.all(color: Colors.grey.shade100),
                 ),
                 child: CupertinoScrollbar(
-                  isAlwaysShown: largeScreen ? false : true,
+                  isAlwaysShown: wideScreen ? false : true,
                   controller: scrollController,
                   child: SingleChildScrollView(
                       controller: scrollController,
@@ -83,51 +83,51 @@ class AboutPage extends StatelessWidget {
                   style: aboutPageTextStyle,
                 ),
                 FlutterLogo(),
-                Platform.isIOS || Platform.isMacOS ?
-                  Text('and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
-                  :
-                Text(
-                  'and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
-                  style: aboutPageTextStyle,
-                ),
+                Platform.isIOS || Platform.isMacOS
+                    ? Text(
+                        'and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
+                    : Text(
+                        'and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
+                        style: aboutPageTextStyle,
+                      ),
               ],
             ),
             SizedBox(height: kSizedBoxHeight - 5),
-            Platform.isIOS || Platform.isMacOS ?
-            ActionChip(
-              label: Text('Get it here'),
-              avatar: Icon(Icons.info_rounded, color: kMainColor),
-              backgroundColor: Color(0xffcce4ff),
-              onPressed: () {
-                launchURL(url: 'https://curiobeing.github.io/GSTNow.app/');
-              },
-            )
-            :
-            Row(
-              children: [
-                TextButton(
-                  onPressed: () {
-                    launchURL(url: kPlayStoreURL);
-                  },
-                  child: Image.asset(
-                    'images/playStore.png',
-                    height: 35,
+            Platform.isIOS || Platform.isMacOS
+                ? ActionChip(
+                    label: Text('Get it here'),
+                    avatar: Icon(Icons.info_rounded, color: kMainColor),
+                    backgroundColor: Color(0xffcce4ff),
+                    onPressed: () {
+                      launchURL(
+                          url: 'https://curiobeing.github.io/GSTNow.app/');
+                    },
+                  )
+                : Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          launchURL(url: kPlayStoreURL);
+                        },
+                        child: Image.asset(
+                          'images/playStore.png',
+                          height: 35,
+                        ),
+                      ),
+                      // Added this SizedBox so that the 2 TextButtons have some space on browser
+                      SizedBox(width: 5),
+                      TextButton(
+                        onPressed: () {
+                          launchURL(url: kAppStoreURL);
+                        },
+                        child: Image.asset(
+                          'images/appStore.png',
+                          height: 35,
+                          // fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                // Added this SizedBox so that the 2 TextButtons have some space on browser
-                SizedBox(width: 5),
-                TextButton(
-                  onPressed: () {
-                    launchURL(url: kAppStoreURL);
-                  },
-                  child: Image.asset(
-                    'images/appStore.png',
-                    height: 35,
-                    // fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
             Divider(),
             SizedBox(height: kSizedBoxHeight - 5),
             Wrap(
@@ -138,7 +138,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    shareApp();
+                    share(shareData: shareAppData);
                   },
                   child: Text(
                     'Spread the word.',
