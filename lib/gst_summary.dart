@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
+import 'gst_calculation_item.dart';
 import 'gst_calculator_brain.dart';
 
 // Moved this widget out of custom_widgets.dart as it has become lengthy
@@ -15,6 +16,7 @@ Widget gstSummary({
   required BuildContext context,
   required bool wideScreen,
   required Function addGSTCalcItem,
+  required Totals totals,
 }) {
   String netAmount = gstCalculatorBrain.netAmount;
   String gstRate = gstCalculatorBrain.rate;
@@ -107,6 +109,7 @@ Widget gstSummary({
         label: 'Ok',
         onPressed: () {},
       ),
+      duration: Duration(seconds: 2),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -214,8 +217,11 @@ Widget gstSummary({
                       gstBreakupOperator: gstBreakupOperator,
                       csgstRate: csgstRate,
                       csgstAmount: csgstAmount,
+                      igstAmount: igstAmount,
                       totalAmount: totalAmount);
                   addGSTCalcItem(data);
+                  // To make the totals to be used in Total row of GST DataTable
+                  totals.addToTotals(data);
                   SnackBar snackBar = SnackBar(
                     content: Container(
                       child: Text('Added', textAlign: TextAlign.center),
@@ -229,7 +235,7 @@ Widget gstSummary({
                     behavior: SnackBarBehavior.floating,
                     width: 100,
                     elevation: 0,
-                    duration: Duration(milliseconds: 500),
+                    duration: Duration(milliseconds: 800),
                     // padding: EdgeInsets.all(0),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -267,93 +273,129 @@ Widget gstSummary({
   );
 }
 
-// This is the GST Calculation Item class to create and store elements for GST Table row creation
-class GSTCalcItem {
-  // We make these nullable so that when this class instantiated in gst_calculatorPage, we need not pass empty values and an empty row is built
-  String? netAmount;
-  String? gstRate;
-  String? gstAmount;
-  String? gstBreakupOperator;
-  // We are not getting igstRate & igstAmount as these will be same as gstRate & gstAmount
-  String? csgstRate;
-  String? csgstAmount;
-  String? totalAmount;
-  GSTCalcItem({
-    required this.netAmount,
-    required this.gstRate,
-    required this.gstAmount,
-    required this.gstBreakupOperator,
-    required this.csgstRate,
-    required this.csgstAmount,
-    required this.totalAmount,
-  });
-  List<GSTCalcItem> gstCalcList = [];
-  void updateGSTCalcList(GSTCalcItem data) {
-    gstCalcList.add(data);
-  }
-
-  void clearGSTCalcList() {
-    gstCalcList.clear();
-  }
-}
-
-Widget gstTable(List<GSTCalcItem> myList, Function f) {
+// gstCalcItemsList - List of GST Calc Items used to generate rows for GST DataTable
+// clearList - function to remove the rows from GST DataTable on click of 'Clear List' button
+// totals - to get the totals to be displayed in the Total row of GST DataTable
+Widget gstDataTable({
+  required List<GSTCalcItem> gstCalcItemsList,
+  required Function clearList,
+  required Totals totals,
+}) {
   // To set the scroll bar visibility
   final ScrollController scrollController = ScrollController();
-  // This list holds the GST Calculation Items to create the rows of GST Table
-  List<GSTCalcItem> myList1 = myList.isEmpty ? [] : myList;
 
-  List<DataRow> testRows = myList1.isEmpty
-      ? []
-      : myList1
-          .asMap()
-          .map((i, gstCalcItem) => MapEntry(
-              // TODO: if we use wrap MapEntry with {}, we get errorThe argument type 'List<dynamic>' can't be assigned to the parameter type 'List<DataRow>'
-              // So we use =>
-              i,
-              DataRow(
-                onSelectChanged: (bool) {},
-                cells: [
-                  DataCell(Text('${i + 1}')),
-                  DataCell(Text(gstCalcItem.netAmount ?? '')),
-                  DataCell(Text(gstCalcItem.gstRate ?? '')),
-                  DataCell(
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(gstCalcItem.gstAmount ?? ''),
-                          SizedBox(height: 4),
-                          // To check for CGST&SGST/IGST and display accordingly
-                          gstCalcItem.gstBreakupOperator == 'IGST'
-                              ? Text(
-                                  'IGST: ${gstCalcItem.gstAmount ?? ''}',
-                                  style: TextStyle(
-                                      fontSize: 10, color: Colors.grey),
-                                )
-                              : Column(
-                                  children: [
-                                    Text(
-                                      'CGST: ${gstCalcItem.csgstAmount ?? ''}',
-                                      style: TextStyle(
-                                          fontSize: 10, color: Colors.grey),
-                                    ),
-                                    Text(
-                                      'SGST: ${gstCalcItem.csgstAmount ?? ''}',
-                                      style: TextStyle(
-                                          fontSize: 10, color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                        ],
-                      ),
+  // Method to return the rows for GST Table
+  List<DataRow> rowsGenerator() {
+    // This list holds the GST Calculation Items to create the rows of GST Table
+    // List<GSTCalcItem> myList1 = myList.isEmpty ? [] : myList;
+
+    // We check if the List<GSTCalcItem> myList is empty and if its empty we assign null rows
+    // If it is not empty, we use List.generate function to generate the rows
+    // We use List.generate instead of .map to get index value to be displayed in No. column
+    // We can also use .asMap() instead of List.generate. But that is more complicated
+    List<DataRow> rowsList = List<DataRow>.generate(
+        gstCalcItemsList.length,
+        (index) => DataRow(
+              onSelectChanged: (isSelected) {},
+              cells: [
+                DataCell(Text('${index + 1}')), // as index starts from 0
+                DataCell(Text(gstCalcItemsList[index].netAmount ?? '')),
+                DataCell(Text('${gstCalcItemsList[index].gstRate ?? ''}%')),
+                DataCell(
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(gstCalcItemsList[index].gstAmount ?? ''),
+                        SizedBox(height: 4),
+                        // To check for CGST&SGST/IGST and display accordingly
+                        gstCalcItemsList[index].gstBreakupOperator == 'IGST'
+                            ? Text(
+                                'IGST: ${gstCalcItemsList[index].gstAmount ?? ''}',
+                                style:
+                                    TextStyle(fontSize: 10, color: Colors.grey),
+                              )
+                            : Column(
+                                children: [
+                                  Text(
+                                    'CGST: ${gstCalcItemsList[index].csgstAmount ?? ''}',
+                                    style: TextStyle(
+                                        fontSize: 10, color: Colors.grey),
+                                  ),
+                                  Text(
+                                    'SGST: ${gstCalcItemsList[index].csgstAmount ?? ''}',
+                                    style: TextStyle(
+                                        fontSize: 10, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                      ],
                     ),
                   ),
-                  DataCell(Text(gstCalcItem.totalAmount ?? '')),
+                ),
+                DataCell(Text(gstCalcItemsList[index].totalAmount ?? '')),
+              ],
+            ));
+
+    // Here we insert the Total Row at the starting of the rows list
+    // We use the Total class and get the totals
+    // 1 - tNetAmount
+    // 2 - tGSTAmount
+    // 3 - tCSGSTAmount
+    // 4 - tIGSTAmount
+    // 5 - tTotalAmount
+    rowsList.insert(
+        0,
+        DataRow(color: MaterialStateProperty.all(Color(0x1AC1C1C1)), cells: [
+          DataCell(Text(
+            'Total',
+            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+          )),
+          DataCell(Text(
+            totals.tAmountString(1),
+            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+          )),
+          DataCell(Text('')),
+          DataCell(
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    totals.tAmountString(2),
+                    style: TextStyle(
+                        color: kMainColor, fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 4),
+                  // To check for CGST&SGST/IGST and display accordingly
+                  Column(
+                    children: [
+                      Text(
+                        'CGST: ${totals.tAmountString(3)}',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                      Text(
+                        'SGST: ${totals.tAmountString(3)}',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                      Text(
+                        'IGST: ${totals.tAmountString(4)}',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ],
-              )))
-          .values
-          .toList();
+              ),
+            ),
+          ),
+          DataCell(Text(
+            totals.tAmountString(5),
+            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+          )),
+        ]));
+
+    return rowsList;
+  }
 
   return Column(
     mainAxisSize: MainAxisSize.min,
@@ -366,7 +408,7 @@ Widget gstTable(List<GSTCalcItem> myList, Function f) {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'List - ${myList1.length} items',
+              'List - ${gstCalcItemsList.length} items',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             TextButton(
@@ -374,7 +416,8 @@ Widget gstTable(List<GSTCalcItem> myList, Function f) {
                 primary: kMainColor,
               ),
               onPressed: () {
-                f();
+                clearList();
+                totals.reset();
               },
               child: Text('Clear List'),
             ),
@@ -406,7 +449,7 @@ Widget gstTable(List<GSTCalcItem> myList, Function f) {
             ],
           ),
           child: Scrollbar(
-            // controller: scrollController,
+            controller: scrollController,
             radius: Radius.circular(kBorderRadius - 2),
             // isAlwaysShown: true,
             child: SingleChildScrollView(
@@ -416,22 +459,23 @@ Widget gstTable(List<GSTCalcItem> myList, Function f) {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
-                  dataRowHeight: 52, // default is 48
+                  dataRowHeight: 58, // default is 48
                   columnSpacing: 20, // default is 56
-                  headingRowHeight: 48, // default is 56
+                  headingRowHeight: 42, // default is 56
                   headingRowColor: MaterialStateProperty.all(Color(0x1AC1C1C1)),
                   showCheckboxColumn: true,
+                  horizontalMargin: 20,
                   columns: [
                     DataColumn(label: Text('No.')),
                     DataColumn(label: Text('Net Amount')),
-                    DataColumn(label: Text('GST Rate')),
+                    DataColumn(label: Text('Rate')),
                     DataColumn(
                       label: Text('GST Amount'),
                     ),
                     DataColumn(label: Text('Total Amount'), numeric: true),
                   ],
                   // We are using .asMap here so that we will get index of list item to be used as 'No'
-                  rows: testRows,
+                  rows: rowsGenerator(),
                 ),
               ),
             ),

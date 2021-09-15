@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants.dart';
 import 'custom_widgets.dart';
+import 'gst_calculation_item.dart';
 import 'gst_calculator_brain.dart';
 import 'gst_summary.dart';
 
@@ -121,30 +122,35 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     });
   }
 
-  // --------------------
+  // To store the calculations in this object and to use them to generate rows for GST DataTable
   GSTCalcItem gstCalcItem = GSTCalcItem(
     gstRate: '',
     netAmount: '',
     csgstRate: '',
     csgstAmount: '',
+    igstAmount: '',
     totalAmount: '',
     gstBreakupOperator: '',
     gstAmount: '',
   );
 
-  // This is to add a new item to the gstCalcList that is used to build gstTable
+  // This is to add a new item to the gstCalcList that is used to build GST DataTable
   void addGSTCalcItem(GSTCalcItem data) {
     setState(() {
       gstCalcItem.updateGSTCalcList(data);
     });
   }
 
-  // This is to clear the gstCalcList and remove the gstTable rows
+  // This is to clear the gstCalcList and remove the GST DataTable rows
   void clearGSTCalcList() {
     setState(() {
       gstCalcItem.clearGSTCalcList();
     });
   }
+
+  // This is to store the totals of amounts
+  // This will be passed to the GST DataTable for using it in Total row
+  Totals totals = Totals();
 
   @override
   // This method is rerun every time setState is called
@@ -272,6 +278,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             context: context,
             wideScreen: wideScreen,
             addGSTCalcItem: addGSTCalcItem,
+            totals: totals,
           ),
           // SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
@@ -279,7 +286,11 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             wideScreen: wideScreen,
             f: updateGSTBreakupOperator,
           ),
-          gstTable(gstCalcItem.gstCalcList, clearGSTCalcList),
+          gstDataTable(
+            gstCalcItemsList: gstCalcItem.gstCalcList,
+            clearList: clearGSTCalcList,
+            totals: totals,
+          ),
           GSTTip(),
         ],
       ),
