@@ -37,7 +37,17 @@ class GSTCalcItem {
   void clearGSTCalcList() {
     gstCalcList.clear();
   }
+
+  // To clear selected items from gstCalcList on click of 'Clear Selected' button
+  // We take the
+  void removeSelectedRows(List<GSTCalcItem> selectedRowsToRemove) {
+    selectedRowsToRemove.forEach((element) {
+      gstCalcList.remove(element);
+    });
+  }
 }
+
+// --------------------------------
 
 // This class is to store the total amount and used to display in the total row of GST DataTable
 class Totals {

@@ -273,30 +273,77 @@ Widget gstSummary({
   );
 }
 
-// gstCalcItemsList - List of GST Calc Items used to generate rows for GST DataTable
-// clearList - function to remove the rows from GST DataTable on click of 'Clear List' button
-// totals - to get the totals to be displayed in the Total row of GST DataTable
-Widget gstDataTable({
-  required List<GSTCalcItem> gstCalcItemsList,
-  required Function clearList,
-  required Totals totals,
-}) {
+class GSTDataTable extends StatefulWidget {
+  // List of GST Calc Items used to generate rows for GST DataTable
+  final List<GSTCalcItem> gstCalcItemsList;
+  // Function to remove the rows from GST DataTable on click of 'Clear List' button
+  final Function clearList;
+  // Function to remove the selected rows from GST DataTable on click of 'Clear Selected' button
+  final Function removeSelectedRows;
+  // To get the totals to be displayed in the Total row of GST DataTable
+  final Totals totals;
+
+  GSTDataTable({
+    required this.gstCalcItemsList,
+    required this.clearList,
+    required this.removeSelectedRows,
+    required this.totals,
+  });
+
+  @override
+  _GSTDataTableState createState() => _GSTDataTableState(
+        gstCalcItemsList: gstCalcItemsList,
+        clearList: clearList,
+        removeSelectedRows: removeSelectedRows,
+        totals: totals,
+      );
+}
+
+class _GSTDataTableState extends State<GSTDataTable> {
+  // List of GST Calc Items used to generate rows for GST DataTable
+  final List<GSTCalcItem> gstCalcItemsList;
+  // Function to remove the rows from GST DataTable on click of 'Clear List' button
+  final Function clearList;
+  // Function to remove the selected rows from GST DataTable on click of 'Clear Selected' button
+  final Function removeSelectedRows;
+  // To get the totals to be displayed in the Total row of GST DataTable
+  final Totals totals;
+
+  _GSTDataTableState({
+    required this.gstCalcItemsList,
+    required this.clearList,
+    required this.removeSelectedRows,
+    required this.totals,
+  });
+
   // To set the scroll bar visibility
   final ScrollController scrollController = ScrollController();
 
+  // To store the selected rows of GST DataTable that will be removed by click of 'Clear Selected' button
+  List<GSTCalcItem> selectedRows = [];
+
   // Method to return the rows for GST Table
   List<DataRow> rowsGenerator() {
-    // This list holds the GST Calculation Items to create the rows of GST Table
-    // List<GSTCalcItem> myList1 = myList.isEmpty ? [] : myList;
-
-    // We check if the List<GSTCalcItem> myList is empty and if its empty we assign null rows
-    // If it is not empty, we use List.generate function to generate the rows
     // We use List.generate instead of .map to get index value to be displayed in No. column
     // We can also use .asMap() instead of List.generate. But that is more complicated
     List<DataRow> rowsList = List<DataRow>.generate(
         gstCalcItemsList.length,
         (index) => DataRow(
-              onSelectChanged: (isSelected) {},
+              // To show the tick mark in check box indicating the row is selected
+              // If the current row is in selectedRows then box will be checked
+              // The current row will be added selectedRows using onSelectChanged Function
+              selected: selectedRows.contains(gstCalcItemsList[index]),
+              onSelectChanged: (isSelected) {
+                setState(() {
+                  // To add the current row to selectedRows list
+                  if (isSelected != null && isSelected) {
+                    selectedRows.add(gstCalcItemsList[index]);
+                  } else {
+                    // To remove the current row to selectedRows list
+                    selectedRows.remove(gstCalcItemsList[index]);
+                  }
+                });
+              },
               cells: [
                 DataCell(Text('${index + 1}')), // as index starts from 0
                 DataCell(Text(gstCalcItemsList[index].netAmount ?? '')),
@@ -397,91 +444,116 @@ Widget gstDataTable({
     return rowsList;
   }
 
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      SizedBox(height: kSizedBoxHeight),
-      Divider(),
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: kPadding * 2),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'List - ${gstCalcItemsList.length} items',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                primary: kMainColor,
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(height: kSizedBoxHeight),
+        Divider(),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: kPadding * 2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'List - ${gstCalcItemsList.length} items',
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              onPressed: () {
-                clearList();
-                totals.reset();
-              },
-              child: Text('Clear List'),
-            ),
-          ],
-        ),
-      ),
-      ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: 400,
-          //MediaQuery.of(context).size.height * 0.5,
-          minHeight: 0,
-        ),
-        child: Container(
-          margin: EdgeInsets.only(
-              left: kPadding,
-              right: kPadding * 1.5,
-              bottom: kPadding,
-              top: kPadding - 4),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(kBorderRadius - 2),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1A000000),
-                // offset: Offset(0, 2),
-                blurRadius: kBorderRadius,
-                // spreadRadius: 2,
+              // This button is to clear list & clear selected items from the list
+              // It does 2 jobs - if selectedRows is empty then it clears list, else it clears selected items
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: kMainColor,
+                ),
+                onPressed: () {
+                  if (selectedRows.isEmpty) {
+                    // To clear the list and reset the totals to 0
+                    clearList();
+                    totals.reset();
+                  } else {
+                    // To remove the selected rows from the GST DataTable
+                    // We get this function from gst_calculatorPage.dart
+                    removeSelectedRows(selectedRows);
+                    // We clear the selectedRows here as it still has the rows selected after executing the above clearSelectedRows(selectedRows) Function
+                    selectedRows.clear();
+                    // We first reset the totals and then do the totalling once again
+                    // If we don't reset here, the totals will be double as we will be adding to the existing total amounts that we receive from the gstSummary widget on click of Add to List button
+                    totals.reset();
+                    // We take the new gstCalcItemsList, i.e. the list with selectedRows removed
+                    // We repeat the addToTotals button for each element of gstCalcItemsList
+                    gstCalcItemsList.forEach((element) {
+                      totals.addToTotals(element);
+                    });
+                  }
+                },
+                child: Text(selectedRows.isEmpty
+                    ? 'Clear List'
+                    : 'Clear Selected (${selectedRows.length})'),
               ),
             ],
           ),
-          child: Scrollbar(
-            controller: scrollController,
-            radius: Radius.circular(kBorderRadius - 2),
-            // isAlwaysShown: true,
-            child: SingleChildScrollView(
-              // This padding to avoid scroll bar shown over text when scrolling horizontally
-              // padding: EdgeInsets.only(right: kPadding - 4),
-              // controller: scrollController,
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: 400,
+            //MediaQuery.of(context).size.height * 0.5,
+            minHeight: 0,
+          ),
+          child: Container(
+            margin: EdgeInsets.only(
+                left: kPadding,
+                right: kPadding * 1.5,
+                bottom: kPadding,
+                top: kPadding - 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(kBorderRadius - 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x1A000000),
+                  // offset: Offset(0, 2),
+                  blurRadius: kBorderRadius,
+                  // spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Scrollbar(
+              controller: scrollController,
+              radius: Radius.circular(kBorderRadius - 2),
+              // isAlwaysShown: true,
               child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  dataRowHeight: 58, // default is 48
-                  columnSpacing: 20, // default is 56
-                  headingRowHeight: 42, // default is 56
-                  headingRowColor: MaterialStateProperty.all(Color(0x1AC1C1C1)),
-                  showCheckboxColumn: true,
-                  horizontalMargin: 20,
-                  columns: [
-                    DataColumn(label: Text('No.')),
-                    DataColumn(label: Text('Net Amount')),
-                    DataColumn(label: Text('Rate')),
-                    DataColumn(
-                      label: Text('GST Amount'),
-                    ),
-                    DataColumn(label: Text('Total Amount'), numeric: true),
-                  ],
-                  // We are using .asMap here so that we will get index of list item to be used as 'No'
-                  rows: rowsGenerator(),
+                // This padding to avoid scroll bar shown over text when scrolling horizontally
+                // padding: EdgeInsets.only(right: kPadding - 4),
+                // controller: scrollController,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    dataRowHeight: 58, // default is 48
+                    columnSpacing: 20, // default is 56
+                    headingRowHeight: 42, // default is 56
+                    headingRowColor:
+                        MaterialStateProperty.all(Color(0x1AC1C1C1)),
+                    showCheckboxColumn: true,
+                    horizontalMargin: 20,
+                    columns: [
+                      DataColumn(label: Text('No.')),
+                      DataColumn(label: Text('Net Amount')),
+                      DataColumn(label: Text('Rate')),
+                      DataColumn(
+                        label: Text('GST Amount'),
+                      ),
+                      DataColumn(label: Text('Total Amount'), numeric: true),
+                    ],
+                    // We are using .asMap here so that we will get index of list item to be used as 'No'
+                    rows: rowsGenerator(),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

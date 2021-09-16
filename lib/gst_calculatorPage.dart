@@ -148,6 +148,13 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     });
   }
 
+  // This is to remove the selected rows from gstCalcList
+  void removeSelectedRows(List<GSTCalcItem> selectedRowsToRemove) {
+    setState(() {
+      gstCalcItem.removeSelectedRows(selectedRowsToRemove);
+    });
+  }
+
   // This is to store the totals of amounts
   // This will be passed to the GST DataTable for using it in Total row
   Totals totals = Totals();
@@ -286,9 +293,10 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             wideScreen: wideScreen,
             f: updateGSTBreakupOperator,
           ),
-          gstDataTable(
+          GSTDataTable(
             gstCalcItemsList: gstCalcItem.gstCalcList,
             clearList: clearGSTCalcList,
+            removeSelectedRows: removeSelectedRows,
             totals: totals,
           ),
           GSTTip(),
