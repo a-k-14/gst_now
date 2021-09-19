@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gst_calc/pdfGeneration.dart';
 import 'constants.dart';
 import 'gst_calculation_item.dart';
 import 'gst_calculator_brain.dart';
@@ -120,7 +121,7 @@ Widget gstSummary({
 
   // The GST summary widget to be displayed
   return Container(
-    margin: EdgeInsets.only(left: kPadding, top: kPadding - 5, right: kPadding),
+    margin: EdgeInsets.only(left: kPadding, top: kPadding - 6, right: kPadding),
     child: Column(
       children: [
         customSummaryRow(
@@ -634,7 +635,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
             margin: EdgeInsets.only(
                 left: kPadding,
                 right: kPadding * 1.5,
-                bottom: kPadding,
+                // bottom: kPadding,
                 top: kPadding - 4),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -685,7 +686,9 @@ class _GSTDataTableState extends State<GSTDataTable> {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            createPDF();
+          },
           style: TextButton.styleFrom(primary: kMainColor),
           child: Text('Share List'),
         ),
