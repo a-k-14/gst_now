@@ -3,7 +3,7 @@ import 'package:share_plus/share_plus.dart';
 
 // This file is to store the constants for the app
 
-Color? kMainColor = Color(0xff0050ab);
+Color kMainColor = Color(0xff0050ab);
 Color kAppBarContentColor = Color(0xffebf4ff);
 
 double kBorderRadius = 8;

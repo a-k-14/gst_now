@@ -20,6 +20,9 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   final TextEditingController baseValueController = TextEditingController();
   // To set the value in GST Rate text field on click of GST Rate Button
   final TextEditingController gstRateController = TextEditingController();
+  // To hold the details to be added to the GST DataTable
+  // We use it in gstSummary, but we declare it here so that this can be cleared on click of 'Clear All' button
+  final TextEditingController detailsController = TextEditingController();
 
   List<double> gstRatesList = [1, 3, 5, 12, 18, 28];
   // To set the sort icon color
@@ -64,6 +67,9 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     });
     // To get the order of GST Rates list
     _loadIsReversedValue();
+    detailsController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -72,6 +78,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     // To ensure we discard any resources used by the controller object
     baseValueController.dispose();
     gstRateController.dispose();
+    detailsController.dispose();
     super.dispose();
   }
 
@@ -124,6 +131,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
   // To store the calculations in this object and to use them to generate rows for GST DataTable
   GSTCalcItem gstCalcItem = GSTCalcItem(
+    details: '',
     gstRate: '',
     netAmount: '',
     csgstRate: '',
@@ -155,6 +163,12 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     });
   }
 
+  void updateDetails(int index, String newDetails) {
+    setState(() {
+      gstCalcItem.updateDetails(index, newDetails);
+    });
+  }
+
   // This is to store the totals of amounts
   // This will be passed to the GST DataTable for using it in Total row
   Totals totals = Totals();
@@ -165,6 +179,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     // To set the TextFields dense value
     // To set the GST operator tab width
     // To set the SnackBar (share) width
+    // To set the details column width of GST DataTable
     final bool wideScreen = MediaQuery.of(context).size.width > wideScreenWidth;
 
     return SingleChildScrollView(
@@ -174,8 +189,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
         children: [
           // This contains - Base Amount, GST Rate, GST Rate Buttons, swap & Clear All
           Container(
-            margin: EdgeInsets.only(top: kPadding - 3, bottom: kPadding * 2),
-            padding: EdgeInsets.fromLTRB(10, 12, 10, 4),
+            margin: EdgeInsets.only(top: kPadding - 3, bottom: kPadding + 5),
+            padding: EdgeInsets.fromLTRB(10, 12, 10, 0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(kBorderRadius - 2),
@@ -208,7 +223,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                         controller: baseValueController,
                         hintText: 'Enter Amount...',
                         inputLength: 12,
-                        largeScreen: wideScreen,
+                        wideScreen: wideScreen,
                       ),
                     ),
                   ],
@@ -231,7 +246,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                         controller: gstRateController,
                         hintText: 'Enter Rate...',
                         inputLength: 9,
-                        largeScreen: wideScreen,
+                        wideScreen: wideScreen,
                         suffix: '%',
                       ),
                     ),
@@ -265,6 +280,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                         setState(() {
                           baseValueController.clear();
                           gstRateController.clear();
+                          detailsController.clear();
                         });
                       },
                       child: Text('Clear All'),
@@ -286,6 +302,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             wideScreen: wideScreen,
             addGSTCalcItem: addGSTCalcItem,
             totals: totals,
+            detailsController: detailsController,
           ),
           // SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
@@ -297,6 +314,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             gstCalcItemsList: gstCalcItem.gstCalcList,
             clearList: clearGSTCalcList,
             removeSelectedRows: removeSelectedRows,
+            updateDetails: updateDetails,
             totals: totals,
           ),
           GSTTip(),

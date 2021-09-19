@@ -13,7 +13,7 @@ Widget customTextField({
   required TextEditingController controller,
   required String hintText,
   required int inputLength,
-  required bool largeScreen,
+  required bool wideScreen,
   String? suffix,
 }) {
   return TextField(
@@ -33,7 +33,7 @@ Widget customTextField({
     cursorColor: kMainColor,
     decoration: InputDecoration(
       // Dense only if large screen (width > 600)
-      isDense: largeScreen ? false : true,
+      isDense: wideScreen ? false : true,
       contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       hintText: hintText,
       hintStyle: TextStyle(
@@ -51,7 +51,7 @@ Widget customTextField({
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: kMainColor!),
+        borderSide: BorderSide(color: kMainColor),
       ),
     ),
   );
@@ -83,8 +83,8 @@ class GSTRateButton extends StatelessWidget {
             for (double gstRate in gstRatesList)
               Container(
                 // Width & height given to keep all buttons consistent
-                width: 65,
-                height: 40,
+                width: 60,
+                height: 32,
                 // Space between the buttons
                 // TODO: The bottom shadow of the buttons is not visible. If we give bottom margin we can see it.
                 margin: EdgeInsets.only(right: 6),

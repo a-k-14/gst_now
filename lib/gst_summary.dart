@@ -11,12 +11,16 @@ import 'gst_calculator_brain.dart';
 // The instance member 'f' can't be accessed in an initializer
 // We take context for snackBar (share) to work
 // We take wideScreen for adjusting the size of SnackBar on bigger screens
+// We take addGSTCalcItem to add the current GST calculation to the gstCalcItem List to be used in GST DataTable
+// We take totals to be used in displaying Total row in GST DataTable
+// We take detailsController to capture description entered
 Widget gstSummary({
   required GSTCalculatorBrain gstCalculatorBrain,
   required BuildContext context,
   required bool wideScreen,
   required Function addGSTCalcItem,
   required Totals totals,
+  required TextEditingController detailsController,
 }) {
   String netAmount = gstCalculatorBrain.netAmount;
   String gstRate = gstCalculatorBrain.rate;
@@ -116,7 +120,7 @@ Widget gstSummary({
 
   // The GST summary widget to be displayed
   return Container(
-    margin: EdgeInsets.only(left: kPadding, top: kPadding, right: kPadding),
+    margin: EdgeInsets.only(left: kPadding, top: kPadding - 5, right: kPadding),
     child: Column(
       children: [
         customSummaryRow(
@@ -197,20 +201,52 @@ Widget gstSummary({
           padding: EdgeInsets.symmetric(
               horizontal: kPadding + 2, vertical: kPadding + 4),
         ),
+        Padding(
+          padding: EdgeInsets.only(top: kPadding + 3, left: 2, right: 2),
+          child: TextField(
+            controller: detailsController,
+            textCapitalization: TextCapitalization.sentences,
+            cursorHeight: 22,
+            cursorColor: kMainColor,
+            decoration: InputDecoration(
+              // Dense only if large screen (width > 600)
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+              labelText: 'Description',
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  // TODO: Cannot use Colors.grey[350] or Colors.grey.shade350
+                  color: Color(0xffD6D6D6),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: kMainColor),
+              ),
+              suffixIcon: detailsController.text.isEmpty
+                  ? Text('')
+                  : IconButton(
+                      splashRadius: 20,
+                      icon: Icon(Icons.clear_rounded, size: 18),
+                      onPressed: () {
+                        detailsController.clear();
+                      },
+                    ),
+            ),
+          ),
+        ),
         // To provide 'Add to List' & 'Share' options
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TextButton(
-              style: TextButton.styleFrom(
-                primary: kMainColor,
-              ),
+              style: TextButton.styleFrom(primary: kMainColor),
               onPressed: () {
                 // To stop empty row addition
                 if (netAmount.isEmpty || gstRate.isEmpty) {
                   showSnackBar();
                 } else {
                   GSTCalcItem data = GSTCalcItem(
+                      details: detailsController.text,
                       netAmount: netAmount,
                       gstRate: gstRate,
                       gstAmount: gstAmount,
@@ -222,6 +258,7 @@ Widget gstSummary({
                   addGSTCalcItem(data);
                   // To make the totals to be used in Total row of GST DataTable
                   totals.addToTotals(data);
+                  // To show 'Added' SnackBar after adding the row to the list/GST DataTable
                   SnackBar snackBar = SnackBar(
                     content: Container(
                       child: Text('Added', textAlign: TextAlign.center),
@@ -238,20 +275,29 @@ Widget gstSummary({
                     duration: Duration(milliseconds: 800),
                     // padding: EdgeInsets.all(0),
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  // We added .closed.then... to avoid showing SnackBar multiple times when we click 'Add to List' button multiple times very quickly
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(snackBar)
+                      .closed
+                      .then((value) =>
+                          ScaffoldMessenger.of(context).clearSnackBars());
                 }
+                FocusScope.of(context).unfocus();
               },
               child: Text('Add to List'),
             ),
             TextButton(
-              style: TextButton.styleFrom(
-                primary: kMainColor,
-              ),
+              style: TextButton.styleFrom(primary: kMainColor),
               onPressed: () {
                 String gstBreakup = gstBreakupOperator == 'IGST'
                     ? 'IGST @ $igstRate% = $igstAmount'
                     : 'CGST @ $csgstRate% = $csgstAmount\nCGST @ $csgstRate% = $csgstAmount';
-                String calculationResult = 'Net Amount = $netAmount\n'
+                // We created a details string so as to avoid an empty 1st line if details is empty
+                String details = detailsController.text.isEmpty
+                    ? ''
+                    : '${detailsController.text}\n';
+                String calculationResult = '$details'
+                    'Net Amount = $netAmount\n'
                     'GST @ $gstRate% = $gstAmount\n'
                     'Total Amount = $totalAmount\n'
                     '----------\n'
@@ -273,6 +319,7 @@ Widget gstSummary({
   );
 }
 
+// We made GSTDataTable into stateful widget from normal widget for the checkboxes to work
 class GSTDataTable extends StatefulWidget {
   // List of GST Calc Items used to generate rows for GST DataTable
   final List<GSTCalcItem> gstCalcItemsList;
@@ -280,6 +327,8 @@ class GSTDataTable extends StatefulWidget {
   final Function clearList;
   // Function to remove the selected rows from GST DataTable on click of 'Clear Selected' button
   final Function removeSelectedRows;
+  // To update the Details of a row
+  final Function updateDetails;
   // To get the totals to be displayed in the Total row of GST DataTable
   final Totals totals;
 
@@ -287,6 +336,7 @@ class GSTDataTable extends StatefulWidget {
     required this.gstCalcItemsList,
     required this.clearList,
     required this.removeSelectedRows,
+    required this.updateDetails,
     required this.totals,
   });
 
@@ -295,6 +345,9 @@ class GSTDataTable extends StatefulWidget {
         gstCalcItemsList: gstCalcItemsList,
         clearList: clearList,
         removeSelectedRows: removeSelectedRows,
+        updateDetails: updateDetails,
+        // contextForUpdateDetails: contextForUpdateDetails,
+        // widescreen: widescreen,
         totals: totals,
       );
 }
@@ -306,6 +359,8 @@ class _GSTDataTableState extends State<GSTDataTable> {
   final Function clearList;
   // Function to remove the selected rows from GST DataTable on click of 'Clear Selected' button
   final Function removeSelectedRows;
+  // To update the Details of a row
+  final Function updateDetails;
   // To get the totals to be displayed in the Total row of GST DataTable
   final Totals totals;
 
@@ -313,6 +368,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
     required this.gstCalcItemsList,
     required this.clearList,
     required this.removeSelectedRows,
+    required this.updateDetails,
     required this.totals,
   });
 
@@ -346,6 +402,81 @@ class _GSTDataTableState extends State<GSTDataTable> {
               },
               cells: [
                 DataCell(Text('${index + 1}')), // as index starts from 0
+                DataCell(
+                    Container(
+                      constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width >
+                                  wideScreenWidth
+                              ? 150
+                              : 80),
+                      child: Text(
+                        gstCalcItemsList[index].details ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // User taps on the details of particular row, a dialog is shown where user can edit the details, and the new details is sent to updateDetails method to update it in the row
+                    onTap: () {
+                  // To pass the TEC into AlertDialog shown
+                  TextEditingController newDetailsController =
+                      TextEditingController();
+                  // To show the already entered text in the AlertDialog
+                  newDetailsController.text =
+                      gstCalcItemsList[index].details ?? '';
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false, // user must tap button!
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        // TODO: Why this and dynamic details column width based on wideScreen does not work
+                        // So we use MediaQuery here directly. Defining it in the start of class also doesn't work?
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.width >
+                                    wideScreenWidth
+                                ? 0
+                                : 100),
+                        child: AlertDialog(
+                          title: Text('Edit Details'),
+                          content: TextField(
+                            controller: newDetailsController,
+                            textCapitalization: TextCapitalization.sentences,
+                            cursorColor: kMainColor,
+                            cursorHeight: 22,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              // contentPadding: EdgeInsets.all(0),
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: kMainColor)),
+                              filled: true,
+                              fillColor: Colors.grey[50],
+                            ),
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(kBorderRadius)),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  newDetailsController.clear();
+                                },
+                                style:
+                                    TextButton.styleFrom(primary: kMainColor),
+                                child: Text('Clear')),
+                            TextButton(
+                              style: TextButton.styleFrom(primary: kMainColor),
+                              child: Text('Done'),
+                              onPressed: () {
+                                // To update the new details in the row
+                                updateDetails(index, newDetailsController.text);
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }),
                 DataCell(Text(gstCalcItemsList[index].netAmount ?? '')),
                 DataCell(Text('${gstCalcItemsList[index].gstRate ?? ''}%')),
                 DataCell(
@@ -394,6 +525,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
     rowsList.insert(
         0,
         DataRow(color: MaterialStateProperty.all(Color(0x1AC1C1C1)), cells: [
+          DataCell(Text('')),
           DataCell(Text(
             'Total',
             style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
@@ -450,7 +582,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(height: kSizedBoxHeight),
-        Divider(),
+        Divider(height: 8),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: kPadding * 2),
           child: Row(
@@ -463,9 +595,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
               // This button is to clear list & clear selected items from the list
               // It does 2 jobs - if selectedRows is empty then it clears list, else it clears selected items
               TextButton(
-                style: TextButton.styleFrom(
-                  primary: kMainColor,
-                ),
+                style: TextButton.styleFrom(primary: kMainColor),
                 onPressed: () {
                   if (selectedRows.isEmpty) {
                     // To clear the list and reset the totals to 0
@@ -538,6 +668,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     horizontalMargin: 20,
                     columns: [
                       DataColumn(label: Text('No.')),
+                      DataColumn(label: Text('Details')),
                       DataColumn(label: Text('Net Amount')),
                       DataColumn(label: Text('Rate')),
                       DataColumn(
@@ -552,6 +683,11 @@ class _GSTDataTableState extends State<GSTDataTable> {
               ),
             ),
           ),
+        ),
+        TextButton(
+          onPressed: () {},
+          style: TextButton.styleFrom(primary: kMainColor),
+          child: Text('Share List'),
         ),
       ],
     );

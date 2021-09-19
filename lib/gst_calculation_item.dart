@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 // This is the GST Calculation Item class to create and store elements for GST Table row creation
 class GSTCalcItem {
   // We make these nullable so that when this class instantiated in gst_calculatorPage, we need not pass empty values and an empty row is built
+  String? details;
   String? netAmount;
   String? gstRate;
   String? gstAmount;
@@ -14,6 +15,7 @@ class GSTCalcItem {
   String? igstAmount;
   String? totalAmount;
   GSTCalcItem({
+    required this.details,
     required this.netAmount,
     required this.gstRate,
     required this.gstAmount,
@@ -44,6 +46,11 @@ class GSTCalcItem {
     selectedRowsToRemove.forEach((element) {
       gstCalcList.remove(element);
     });
+  }
+
+  // To update the details element of a particular row
+  void updateDetails(int index, String newDetails) {
+    gstCalcList[index].details = newDetails;
   }
 }
 
