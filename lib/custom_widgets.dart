@@ -83,7 +83,7 @@ class GSTRateButton extends StatelessWidget {
             for (double gstRate in gstRatesList)
               Container(
                 // Width & height given to keep all buttons consistent
-                width: 60,
+                width: 64,
                 height: 32,
                 // Space between the buttons
                 // TODO: The bottom shadow of the buttons is not visible. If we give bottom margin we can see it.

@@ -656,7 +656,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
               child: SingleChildScrollView(
                 // This padding to avoid scroll bar shown over text when scrolling horizontally
                 // padding: EdgeInsets.only(right: kPadding - 4),
-                // controller: scrollController,
+                controller: scrollController,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
@@ -687,7 +687,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
         ),
         TextButton(
           onPressed: () {
-            createPDF();
+            createPDF(gstCalcItemsList, totals);
           },
           style: TextButton.styleFrom(primary: kMainColor),
           child: Text('Share List'),
