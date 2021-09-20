@@ -429,7 +429,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     barrierDismissible: false, // user must tap button!
                     builder: (BuildContext context) {
                       return SingleChildScrollView(
-                        // TODO: Why this and dynamic details column width based on wideScreen does not work
+                        // TODO: Why this and details column width based on wideScreen does not work
                         // So we use MediaQuery here directly. Defining it in the start of class also doesn't work?
                         padding: EdgeInsets.only(
                             top: MediaQuery.of(context).size.width >
@@ -687,7 +687,31 @@ class _GSTDataTableState extends State<GSTDataTable> {
         ),
         TextButton(
           onPressed: () {
-            createPDF(gstCalcItemsList, totals);
+            // We generate PDF by calling createPDF function and if there is any error in generating PDf we show SnackBar
+            createPDF(gstCalcItemsList, totals).then((value) {
+              if (value) {
+                print(value);
+              } else {
+                print(value);
+                // To show SnackBar on error
+                SnackBar snackBar = SnackBar(
+                  elevation: 0,
+                  width: MediaQuery.of(context).size.width > wideScreenWidth
+                      ? MediaQuery.of(context).size.width * 0.70
+                      : MediaQuery.of(context).size.width * 0.98,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(kBorderRadius)),
+                  content: Text('Error creating PDF. Please try again.'),
+                  action: SnackBarAction(
+                    label: 'Ok',
+                    onPressed: () {},
+                  ),
+                  duration: Duration(seconds: 2),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            });
           },
           style: TextButton.styleFrom(primary: kMainColor),
           child: Text('Share List'),
