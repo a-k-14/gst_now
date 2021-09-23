@@ -27,8 +27,9 @@ Future<bool> createPDF(
       // Constants to be used in table for customizations
       pw.TextStyle gstAmountDetailsStyle =
           pw.TextStyle(fontSize: 9, color: PdfColors.grey700);
-      pw.TextStyle totalTextStyle =
-          pw.TextStyle(color: mainColor, fontWeight: pw.FontWeight.bold);
+      pw.TextStyle totalTextStyle = pw.TextStyle(
+          color: mainColor, fontWeight: pw.FontWeight.bold, fontSize: 11);
+      pw.TextStyle rowTextStyle = pw.TextStyle(fontSize: 11);
 
       // To generate the GST Amount & CGST & SGST/IGST amount displays
       pw.Widget gstAmount(int index) {
@@ -36,7 +37,8 @@ Future<bool> createPDF(
             mainAxisAlignment: pw.MainAxisAlignment.center,
             crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
-              pw.Text('${gstCalcItemsList[index].gstAmount}'),
+              pw.Text('${gstCalcItemsList[index].gstAmount}',
+                  style: rowTextStyle),
               pw.SizedBox(height: 5),
               gstCalcItemsList[index].gstBreakupOperator == 'IGST'
                   ? pw.Text(
@@ -64,7 +66,7 @@ Future<bool> createPDF(
         gstCalcItemsList.length,
         (index) {
           return [
-            pw.Text('${index + 1}'),
+            pw.Text('${index + 1}', style: rowTextStyle),
 
             /// We added Expanded here as we were getting the below error though the rows do not need 20 pages
             // This widget created more than 20 pages. This may be an issue in the widget or the document
@@ -74,18 +76,21 @@ Future<bool> createPDF(
                 constraints: pw.BoxConstraints(
                   maxWidth: 150,
                 ),
-                child: pw.Text('${gstCalcItemsList[index].details}'),
+                child: pw.Text('${gstCalcItemsList[index].details}',
+                    style: rowTextStyle),
               ),
             ),
             pw.Expanded(
-              child: pw.Text('${gstCalcItemsList[index].netAmount}'),
+              child: pw.Text('${gstCalcItemsList[index].netAmount}',
+                  style: rowTextStyle),
             ),
-            pw.Text('${gstCalcItemsList[index].gstRate}%'),
+            pw.Text('${gstCalcItemsList[index].gstRate}%', style: rowTextStyle),
             pw.Expanded(
               child: gstAmount(index),
             ),
             pw.Expanded(
-              child: pw.Text('${gstCalcItemsList[index].totalAmount}'),
+              child: pw.Text('${gstCalcItemsList[index].totalAmount}',
+                  style: rowTextStyle),
             ),
           ];
         },
@@ -198,7 +203,176 @@ Future<bool> createPDF(
       );
     }
 
-    /* pw.Widget test() {
+    //---------------------------------------------------------------
+    _myPageTheme(PdfPageFormat format) {
+      return pw.PageTheme(
+        margin: pw.EdgeInsets.all(0),
+        pageFormat: format.applyMargin(
+            left: 0 * PdfPageFormat.cm,
+            top: 0 * PdfPageFormat.cm,
+            right: 0,
+            bottom: 0.5 * PdfPageFormat.cm),
+        theme: pw.ThemeData(
+//      base: pw.Font.ttf(await rootBundle.load('assets/fonts/nexa_bold.otf')),
+//      bold:
+//          pw.Font.ttf(await rootBundle.load('assets/fonts/raleway_medium.ttf')),
+            ),
+        buildBackground: (pw.Context context) {
+          return pw.FullPage(
+            ignoreMargins: true,
+            child: pw.CustomPaint(
+              // size: PdfPoint(format.width, format.height),
+              painter: (PdfGraphics canvas, PdfPoint size) {
+                context.canvas
+                  // ..setColor(PdfColors.lightBlue)
+                  // ..moveTo(0, size.y)
+                  // ..lineTo(0, size.y - 230)
+                  // ..lineTo(60, size.y)
+                  // ..fillPath()
+                  ..setColor(PdfColors.grey300)
+                  ..moveTo(0, size.y)
+                  ..lineTo(0, size.y - 100)
+                  ..lineTo(100, size.y)
+                  ..fillPath()
+                  ..setColor(PdfColors.grey100)
+                  ..moveTo(30, size.y)
+                  ..lineTo(110, size.y - 50)
+                  ..lineTo(150, size.y)
+                  ..fillPath();
+                // ..moveTo(size.x, 0)
+                // ..lineTo(size.x, 230)
+                // ..lineTo(size.x - 60, 0)
+                // ..fillPath()
+                // ..setColor(PdfColors.blue)
+                // ..moveTo(size.x, 0)
+                // ..lineTo(size.x, 100)
+                // ..lineTo(size.x - 100, 0)
+                // ..fillPath()
+                // ..setColor(PdfColors.lightBlue)
+                // ..moveTo(size.x - 30, 0)
+                // ..lineTo(size.x - 110, 50)
+                // ..lineTo(size.x - 150, 0)
+                // ..fillPath();
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    //----------------------------------------------
+
+    // Adding data to the PDF
+    pdfGSTDataTable.addPage(
+      pw.MultiPage(
+        // maxPages: 1,
+        // pageFormat: PdfPageFormat.a4,
+        // margin: pw.EdgeInsets.all(0),
+        pageTheme: _myPageTheme(PdfPageFormat.a4),
+        header: (context) {
+          return pw.Container(
+            margin: pw.EdgeInsets.fromLTRB(52, 80, 52, 0),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  'Proforma GST calculation',
+                  style: pw.TextStyle(
+                    color: mainColor,
+                  ),
+                ),
+                pw.Divider(color: PdfColors.grey400),
+                pw.SizedBox(height: 1),
+              ],
+            ),
+          );
+        },
+        build: (pw.Context context) {
+          return [
+            pw.Container(
+              margin: pw.EdgeInsets.symmetric(horizontal: 52, vertical: 5),
+              child: gstDataTable(),
+            ),
+            // test(),
+          ];
+        },
+
+        footer: (context) {
+          return pw.Container(
+            color: mainColor,
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                // We have divider here so that column expands full width
+                // We can use pw.CrossAxisAlignment.stretch, but we need data to align in center
+                pw.Divider(color: mainColor),
+                pw.Text(
+                  'via GST Now - The simplest GST calculator app with CGST, SGST & IGST breakup',
+                  style: pw.TextStyle(
+                    color: PdfColors.blueGrey300,
+                    fontSize: 12,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  children: [
+                    pw.UrlLink(
+                      child: pw.Text(
+                        'Available here for Android',
+                        style: pw.TextStyle(
+                          decoration: pw.TextDecoration.underline,
+                          color: PdfColors.blueGrey300,
+                          // fontSize: 10,
+                        ),
+                      ),
+                      destination: '$kPlayStoreURL',
+                    ),
+                    pw.SizedBox(width: 20),
+                    pw.UrlLink(
+                      child: pw.Text(
+                        'Available here for iOS & macOS',
+                        style: pw.TextStyle(
+                          decoration: pw.TextDecoration.underline,
+                          color: PdfColors.blueGrey300,
+                          // fontSize: 10,
+                        ),
+                      ),
+                      destination: '$kAppStoreURL',
+                    ),
+                  ],
+                ),
+                pw.Divider(color: mainColor),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    // To get the current directory where the file will be saved
+    var documentDirectory = await getApplicationDocumentsDirectory();
+
+    // Here we set the PDF file name as well
+    File pdfFile =
+        File('${documentDirectory.path}/GST Now-ar-${DateTime.now()}.pdf');
+
+    // Writing the data into the PDF file
+    // earlier this was
+    // await pdfFile.writeAsBytes(await pdfGSTDataTable.save());
+    pdfFile.writeAsBytesSync(await pdfGSTDataTable.save());
+
+    // Opening the PDF file
+    await OpenFile.open(pdfFile.path);
+    result = true;
+  } catch (e) {
+    print(e);
+    result = false;
+  }
+  return result;
+}
+
+/* pw.Widget test() {
     final data = List.generate(gstCalcItemsList.length, (index) {
       return pw.TableRow(children: [
         pw.Expanded(
@@ -267,77 +441,3 @@ Future<bool> createPDF(
     );
     return pw.Table(children: data);
   }*/
-
-    // Adding data to the PDF
-    pdfGSTDataTable.addPage(
-      pw.MultiPage(
-        // maxPages: 1,
-        pageFormat: PdfPageFormat.a4,
-        margin: pw.EdgeInsets.all(56),
-        header: (context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                'Proforma GST calculation',
-                style: pw.TextStyle(color: mainColor),
-              ),
-              pw.Divider(color: PdfColors.blueGrey),
-              pw.SizedBox(height: 10),
-            ],
-          );
-        },
-        build: (pw.Context context) {
-          return [
-            gstDataTable(),
-            // test(),
-          ];
-        },
-        footer: (context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
-            children: [
-              pw.Divider(color: PdfColors.blueGrey500),
-              pw.Text(
-                'via GST Now - The simplest GST calculator app with CGST, SGST & IGST breakup.',
-                style: pw.TextStyle(
-                  color: PdfColors.blueGrey500,
-                  fontSize: 10,
-                  // fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.Text(
-                'Available for Android on PlayStore, and iOS & macOS on AppStore.',
-                style: pw.TextStyle(
-                  color: PdfColors.blueGrey500,
-                  fontSize: 10,
-                  // fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-
-    // To get the current directory where the file will be saved
-    var documentDirectory = await getApplicationDocumentsDirectory();
-
-    // Here we set the PDF file name as well
-    File pdfFile =
-        File('${documentDirectory.path}/GST Now-ar-${DateTime.now()}.pdf');
-
-    // Writing the data into the PDF file
-    // earlier this was
-    // await pdfFile.writeAsBytes(await pdfGSTDataTable.save());
-    pdfFile.writeAsBytesSync(await pdfGSTDataTable.save());
-
-    // Opening the PDF file
-    await OpenFile.open(pdfFile.path);
-    result = true;
-  } catch (e) {
-    print(e);
-    result = false;
-  }
-  return result;
-}

@@ -444,6 +444,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                             cursorColor: kMainColor,
                             cursorHeight: 22,
                             autofocus: true,
+                            maxLines: 2,
                             decoration: InputDecoration(
                               // contentPadding: EdgeInsets.all(0),
                               focusedBorder: UnderlineInputBorder(
@@ -627,7 +628,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
         ),
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: 400,
+            maxHeight: 430,
             //MediaQuery.of(context).size.height * 0.5,
             minHeight: 0,
           ),

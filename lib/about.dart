@@ -83,6 +83,7 @@ class AboutPage extends StatelessWidget {
                   style: aboutPageTextStyle,
                 ),
                 FlutterLogo(),
+                // The following check is to avoid copyright issues from apple
                 Platform.isIOS || Platform.isMacOS
                     ? Text(
                         'and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
