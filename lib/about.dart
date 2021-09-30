@@ -55,12 +55,22 @@ class AboutPage extends StatelessWidget {
                   border: Border.all(color: Colors.grey.shade100),
                 ),
                 child: CupertinoScrollbar(
-                  isAlwaysShown: wideScreen ? false : true,
+                  isAlwaysShown: true,
                   controller: scrollController,
                   child: SingleChildScrollView(
                       controller: scrollController,
                       scrollDirection: Axis.horizontal,
-                      child: Image.asset('images/help.png')),
+                      child: Row(
+                        children: [
+                          Image.asset('images/help.png'),
+                          SizedBox(
+                            width: 2,
+                            child: Container(color: Colors.grey[200]),
+                            height: 200,
+                          ),
+                          Image.asset('images/help2.png'),
+                        ],
+                      )),
                 ),
               ),
             ),
@@ -86,9 +96,9 @@ class AboutPage extends StatelessWidget {
                 // The following check is to avoid copyright issues from apple
                 Platform.isIOS || Platform.isMacOS
                     ? Text(
-                        'and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
+                        'with ~2200 lines of code, and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
                     : Text(
-                        'and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
+                        'with ~2200 lines of code, and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
                         style: aboutPageTextStyle,
                       ),
               ],
