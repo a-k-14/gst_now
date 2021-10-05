@@ -1,3 +1,3 @@
-# gst_calc
+# GST Now
 
 The simplest GST calculator
