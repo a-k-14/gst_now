@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Transparent status bar in SystemChrome
-import 'package:gst_calc/about.dart';
+import 'about.dart';
 import 'constants.dart';
 import 'gst_calculatorPage.dart';
 

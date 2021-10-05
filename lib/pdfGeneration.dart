@@ -1,10 +1,10 @@
 import 'dart:io'; // To create a PDF file at the path
-import 'package:gst_calc/constants.dart';
-import 'package:gst_calc/gst_calculation_item.dart';
+import 'constants.dart';
 import 'package:path_provider/path_provider.dart'; // To get the document stored path
 import 'package:pdf/pdf.dart'; // To create PDF
 import 'package:pdf/widgets.dart' as pw; // To use widgets to create PDF
 import 'package:open_file/open_file.dart'; // To open the PDF file in the platform native viewer
+import 'gst_calculation_item.dart';
 
 // Function to create a PDF
 // We try creating a PDF and then return the result in the form of a bool to show an error(SnackBar) when bool is false

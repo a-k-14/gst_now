@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:gst_calc/constants.dart';
-import 'package:gst_calc/custom_widgets.dart';
+import 'constants.dart';
+import 'custom_widgets.dart';
 import 'package:flutter/cupertino.dart';
 
 class AboutPage extends StatelessWidget {

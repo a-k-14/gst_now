@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gst_calc/pdfGeneration.dart';
+import 'pdfGeneration.dart';
 import 'constants.dart';
 import 'gst_calculation_item.dart';
 import 'gst_calculator_brain.dart';
