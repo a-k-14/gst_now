@@ -3,7 +3,7 @@ import 'package:share_plus/share_plus.dart';
 
 // This file is to store the constants for the app
 
-Color? kMainColor = Color(0xff0050ab);
+Color kMainColor = Color(0xff0050ab);
 Color kAppBarContentColor = Color(0xffebf4ff);
 
 double kBorderRadius = 8;
@@ -14,7 +14,7 @@ double kSizedBoxHeight = 10;
 double kTextSize = 16;
 double kLargeScreenTextSize = kTextSize + 2;
 
-double largeScreenWidth = 600;
+double wideScreenWidth = 600;
 
 // Overall padding and padding in between the widgets
 double kPadding = 10;
@@ -53,10 +53,12 @@ String kPlayStoreURL =
 String kAppStoreURL =
     'https://apps.apple.com/us/app/gst-now-simple-gst-calculator/id1579338419';
 
-void shareApp() {
-  Share.share(
+String shareAppData =
     'Download GST Now - The simplest GST calculator app with CGST, SGST & IGST breakup!⚡'
     '\n\nAndroid\n$kPlayStoreURL'
-    '\n\niOS\n$kAppStoreURL',
-  );
+    '\n\niOS & macOS\n$kAppStoreURL';
+
+// We use shareData as a variable as share method is required to share different data from the app
+void share({required String shareData}) {
+  Share.share(shareData);
 }

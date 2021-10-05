@@ -1,4 +1,4 @@
-name: gst_calc
+name: gst_now
 description: The simplest GST calculator
 
 # The following line prevents the package from being accidentally published to
@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.0+3
+version: 2.1.0+4
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -27,9 +27,15 @@ dependencies:
   # To store GST Rates Button Reverse setting
   shared_preferences: ^2.0.6
   # To share app
-  share_plus: ^2.1.4
-  # To open store links and communication links
+  share_plus: ^3.0.1
+  # To open store links and social media/communication links
   url_launcher: ^6.0.9
+  # To create PDFs
+  pdf: ^3.6.0
+  # To get path to save and read PDF
+  path_provider: ^2.0.5
+  # To open the created & saved PDF
+  open_file: ^3.2.1
 
 
   # The following adds the Cupertino Icons font to your application.
