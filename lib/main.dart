@@ -31,7 +31,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         // This is the theme of application.
         // primarySwatch: Colors.blueGrey,
+        scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(
+          //   0xff0069e0 0xff328ce6 0xff0055ab
+          backgroundColor: kMainColor,
+          elevation: 1,
+          titleTextStyle: TextStyle(
+            color: kAppBarContentColor,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ), //  0xffebf1ff
+          systemOverlayStyle: SystemUiOverlayStyle.light,
           // To set the action icons & back button color
           iconTheme: IconThemeData(color: kAppBarContentColor),
         ),
@@ -65,19 +75,8 @@ class Home extends StatelessWidget {
         top: false,
         bottom: false,
         child: Scaffold(
-          backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text(
-              title,
-              style: TextStyle(
-                color: kAppBarContentColor,
-                //  0xffebf1ff
-              ),
-            ),
-            elevation: 0,
-            brightness: Brightness.dark,
-            backgroundColor: Color(0xff0050ab),
-            //   0xff0069e0 0xff328ce6 0xff0055ab
+            title: Text(title),
             actions: [
               IconButton(
                 tooltip: 'Help & About',

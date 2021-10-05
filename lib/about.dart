@@ -16,15 +16,7 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Help & About',
-          style: TextStyle(
-            color: Color(0xffebf4ff),
-          ),
-        ),
-        elevation: 0,
-        brightness: Brightness.dark,
-        backgroundColor: Color(0xff0050ab),
+        title: Text('Help & About'),
         actions: [
           IconButton(
             tooltip: 'Share App',
@@ -42,7 +34,7 @@ class AboutPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Thank you for checking the app. Here is a quick guide:\n',
+              'Thank you for checking the app. Here is a quick guide ℹ\n',
               style: aboutPageTextStyle,
             ),
             // Align is to center help.png on bigger screens like ipad or browser
@@ -51,6 +43,7 @@ class AboutPage extends StatelessWidget {
               child: Container(
                 height: wideScreen ? 550 : 400,
                 decoration: BoxDecoration(
+                  color: Color(0xfffafafa),
                   borderRadius: BorderRadius.circular(kBorderRadius),
                   border: Border.all(color: Colors.grey.shade100),
                 ),
@@ -82,7 +75,7 @@ class AboutPage extends StatelessWidget {
             SizedBox(height: kSizedBoxHeight),
             Text(
               '👋 I am Akshay - A Chartered Accountant by profession & a technology enthusiast by passion. '
-              'In my pursuit to make complex accounting, finance, & taxation concepts & tasks simple & easy with the help of technology, I\'ve started with this simplest GST Calculator.',
+              'In my pursuit to make complex FAT (Finance, Accounting, & Taxation) concepts & tasks simple & easy with the help of technology, I\'ve started with this simplest GST Calculator.',
               style: aboutPageTextStyle,
             ),
             SizedBox(height: kSizedBoxHeight - 5),
@@ -96,27 +89,43 @@ class AboutPage extends StatelessWidget {
                 // The following check is to avoid copyright issues from apple
                 Platform.isIOS || Platform.isMacOS
                     ? Text(
-                        'with ~2200 lines of code, and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.')
+                        'with ~2200 lines of code, and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.',
+                        style: aboutPageTextStyle,
+                      )
                     : Text(
                         'with ~2200 lines of code, and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
                         style: aboutPageTextStyle,
                       ),
+                GestureDetector(
+                  child: Text(
+                    'Download here',
+                    style: aboutPageTextStyle.copyWith(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  onTap: () {
+                    launchURL(url: 'https://curiobeing.github.io/GSTNow.app/');
+                  },
+                ),
+                Text(
+                  ' for other platforms.',
+                  style: aboutPageTextStyle,
+                ),
               ],
             ),
             SizedBox(height: kSizedBoxHeight - 5),
-            Platform.isIOS || Platform.isMacOS
-                ? ActionChip(
-                    label: Text('Get it here'),
-                    avatar: Icon(Icons.info_rounded, color: kMainColor),
-                    backgroundColor: Color(0xffcce4ff),
-                    onPressed: () {
-                      launchURL(
-                          url: 'https://curiobeing.github.io/GSTNow.app/');
-                    },
-                  )
-                : Row(
-                    children: [
-                      TextButton(
+            Divider(),
+            SizedBox(height: kSizedBoxHeight - 5),
+            Text(
+              'Don\'t forget to review⭐ the app👇',
+              style: aboutPageTextStyle,
+            ),
+            Row(
+              children: [
+                Platform.isIOS || Platform.isMacOS
+                    ? Text('')
+                    : TextButton(
                         onPressed: () {
                           launchURL(url: kPlayStoreURL);
                         },
@@ -125,43 +134,38 @@ class AboutPage extends StatelessWidget {
                           height: 35,
                         ),
                       ),
-                      // Added this SizedBox so that the 2 TextButtons have some space on browser
-                      SizedBox(width: 5),
-                      TextButton(
-                        onPressed: () {
-                          launchURL(url: kAppStoreURL);
-                        },
-                        child: Image.asset(
-                          'images/appStore.png',
-                          height: 35,
-                          // fit: BoxFit.cover,
-                        ),
-                      ),
-                    ],
+                // Added this SizedBox so that the 2 TextButtons have some space on browser
+                SizedBox(width: 5),
+                TextButton(
+                  onPressed: () {
+                    launchURL(url: kAppStoreURL);
+                  },
+                  child: Image.asset(
+                    'images/appStore.png',
+                    height: 35,
+                    // fit: BoxFit.cover,
                   ),
+                ),
+              ],
+            ),
             Divider(),
             SizedBox(height: kSizedBoxHeight - 5),
             Wrap(
               children: [
-                Text(
-                  'Don\'t forget to review the app🙏 & ',
-                  style: aboutPageTextStyle,
-                ),
                 GestureDetector(
                   onTap: () {
                     share(shareData: shareAppData);
                   },
                   child: Text(
-                    'Spread the word.',
+                    'Spread the word',
                     style: aboutPageTextStyle.copyWith(
                       color: Colors.blue,
                       decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
-                Text(' '),
                 Text(
-                  'If you have any feedback to make this app more purposeful or want to say 👋, we can catch up on ',
+                  'and if you have any feedback or want to say 👋, we can catch up on ',
                   style: aboutPageTextStyle,
                 ),
                 ActionChip(
