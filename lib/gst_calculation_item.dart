@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class GSTCalcItem {
   // We make these nullable so that when this class instantiated in gst_calculatorPage, we need not pass empty values and an empty row is built
   String? details;
-  String? netAmount;
+  String? baseAmount;
   String? gstRate;
   String? gstAmount;
   String? gstBreakupOperator;
@@ -16,7 +16,7 @@ class GSTCalcItem {
   String? totalAmount;
   GSTCalcItem({
     required this.details,
-    required this.netAmount,
+    required this.baseAmount,
     required this.gstRate,
     required this.gstAmount,
     required this.gstBreakupOperator,
@@ -58,7 +58,7 @@ class GSTCalcItem {
 
 // This class is to store the total amount and used to display in the total row of GST DataTable
 class Totals {
-  double tNetAmount = 0;
+  double tBaseAmount = 0;
   double tGSTAmount = 0;
   double tCSGSTAmount = 0;
   double tIGSTAmount = 0;
@@ -81,7 +81,7 @@ class Totals {
   }
 
   void addToTotals(GSTCalcItem data) {
-    tNetAmount += stringToDouble(data.netAmount ?? '0');
+    tBaseAmount += stringToDouble(data.baseAmount ?? '0');
     tGSTAmount += stringToDouble(data.gstAmount ?? '0');
     tCSGSTAmount += stringToDouble(data.csgstAmount ?? '0');
     tIGSTAmount += stringToDouble(data.igstAmount ?? '0');
@@ -90,7 +90,7 @@ class Totals {
 
   // To reset the totals on click of Clear List button
   void reset() {
-    tNetAmount = 0;
+    tBaseAmount = 0;
     tGSTAmount = 0;
     tCSGSTAmount = 0;
     tIGSTAmount = 0;
@@ -107,7 +107,7 @@ class Totals {
     // If we do not assign 0, we get 'The non-nullable local variable 'valueToBeFormatted' must be assigned before it can be used.'
     double valueToBeFormatted = 0;
     if (i == 1) {
-      valueToBeFormatted = tNetAmount;
+      valueToBeFormatted = tBaseAmount;
     } else if (i == 2) {
       valueToBeFormatted = tGSTAmount;
     } else if (i == 3) {

@@ -17,7 +17,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // We used static keyword for TEC and instantiated them in calculator brain object
   // This way we get that a disposed TextEditingController was used
   // So we use setters in setState in initState
-  final TextEditingController baseValueController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
   // To set the value in GST Rate text field on click of GST Rate Button
   final TextEditingController gstRateController = TextEditingController();
   // To hold the details to be added to the GST DataTable
@@ -49,11 +49,11 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
 
   @override
   void initState() {
-    baseValueController.addListener(() {
+    amountController.addListener(() {
       // We call setState so that everytime initial value changes, controller will trigger changes like calling compute method
       setState(() {
         // To get updated results everytime initialValue changes
-        _gstCalculatorBrain.baseAmountText = baseValueController.text;
+        _gstCalculatorBrain.amountText = amountController.text;
         _gstCalculatorBrain.compute();
       });
     });
@@ -76,7 +76,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   @override
   void dispose() {
     // To ensure we discard any resources used by the controller object
-    baseValueController.dispose();
+    amountController.dispose();
     gstRateController.dispose();
     detailsController.dispose();
     super.dispose();
@@ -133,7 +133,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   GSTCalcItem gstCalcItem = GSTCalcItem(
     details: '',
     gstRate: '',
-    netAmount: '',
+    baseAmount: '',
     csgstRate: '',
     csgstAmount: '',
     igstAmount: '',
@@ -211,7 +211,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       // To ensure Initial Value and GST Rate take same width
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
-                        'Base Amount',
+                        'Amount',
                         style: TextStyle(
                           fontSize:
                               wideScreen ? kLargeScreenTextSize : kTextSize,
@@ -220,7 +220,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ),
                     Expanded(
                       child: customTextField(
-                        controller: baseValueController,
+                        controller: amountController,
                         hintText: 'Enter Amount...',
                         inputLength: 12,
                         wideScreen: wideScreen,
@@ -278,7 +278,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       ),
                       onPressed: () {
                         setState(() {
-                          baseValueController.clear();
+                          amountController.clear();
                           gstRateController.clear();
                           detailsController.clear();
                         });

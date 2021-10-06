@@ -81,7 +81,7 @@ Future<bool> createPDF(
               ),
             ),
             pw.Expanded(
-              child: pw.Text('${gstCalcItemsList[index].netAmount}',
+              child: pw.Text('${gstCalcItemsList[index].baseAmount}',
                   style: rowTextStyle),
             ),
             pw.Text('${gstCalcItemsList[index].gstRate}%', style: rowTextStyle),
@@ -151,7 +151,7 @@ Future<bool> createPDF(
         headers: [
           'No.',
           'Details',
-          'Net Amount',
+          'Base Amount',
           'Rate ',
           'GST Amount',
           'Total '

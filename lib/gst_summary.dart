@@ -23,7 +23,7 @@ Widget gstSummary({
   required Totals totals,
   required TextEditingController detailsController,
 }) {
-  String netAmount = gstCalculatorBrain.netAmount;
+  String baseAmount = gstCalculatorBrain.baseAmount;
   String gstRate = gstCalculatorBrain.rate;
   String gstAmount = gstCalculatorBrain.gstAmount;
   String totalAmount = gstCalculatorBrain.totalAmount;
@@ -92,14 +92,14 @@ Widget gstSummary({
     style: kGSTSummaryBreakupTextStyle,
   );
 
-  // To show Snack Bar on click of Add to List & Share buttons if BaseAmount || GSTRate are empty
+  // To show Snack Bar on click of Add to List & Share buttons if Amount || GSTRate are empty
   void showSnackBar() {
-    // We show the text based on which filed Base Amount & GST Rate is empty
+    // We show the text based on which field Amount & GST Rate is empty
     String snackBarText = '';
-    if (netAmount.isEmpty & gstRate.isEmpty) {
-      snackBarText = 'Please enter Base Amount & GST Rate';
-    } else if (netAmount.isEmpty) {
-      snackBarText = 'Please enter Base Amount';
+    if (baseAmount.isEmpty & gstRate.isEmpty) {
+      snackBarText = 'Please enter Amount & GST Rate';
+    } else if (baseAmount.isEmpty) {
+      snackBarText = 'Please enter Amount';
     } else if (gstRate.isEmpty) {
       snackBarText = 'Please enter GST Rate';
     }
@@ -130,7 +130,7 @@ Widget gstSummary({
             style: kGSTSummaryRowTextStyle1,
           ),
           value: Text(
-            netAmount,
+            baseAmount,
             style: kGSTSummaryRowTextStyle2,
           ),
           color: kGSTSummaryRowBackground1,
@@ -243,12 +243,12 @@ Widget gstSummary({
               style: TextButton.styleFrom(primary: kMainColor),
               onPressed: () {
                 // To stop empty row addition
-                if (netAmount.isEmpty || gstRate.isEmpty) {
+                if (baseAmount.isEmpty || gstRate.isEmpty) {
                   showSnackBar();
                 } else {
                   GSTCalcItem data = GSTCalcItem(
                       details: detailsController.text,
-                      netAmount: netAmount,
+                      baseAmount: baseAmount,
                       gstRate: gstRate,
                       gstAmount: gstAmount,
                       gstBreakupOperator: gstBreakupOperator,
@@ -298,14 +298,14 @@ Widget gstSummary({
                     ? ''
                     : '${detailsController.text}\n';
                 String calculationResult = '$details'
-                    'Net Amount = $netAmount\n'
+                    'Net Amount = $baseAmount\n'
                     'GST @ $gstRate% = $gstAmount\n'
                     'Total Amount = $totalAmount\n'
                     '----------\n'
                     '$gstBreakup\n\n'
                     'via GST Now, download👉: https://curiobeing.github.io/GSTNow.app/';
                 // To stop empty sharing
-                if (netAmount.isEmpty || gstRate.isEmpty) {
+                if (baseAmount.isEmpty || gstRate.isEmpty) {
                   showSnackBar();
                 } else {
                   share(shareData: calculationResult);
@@ -479,7 +479,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     },
                   );
                 }),
-                DataCell(Text(gstCalcItemsList[index].netAmount ?? '')),
+                DataCell(Text(gstCalcItemsList[index].baseAmount ?? '')),
                 DataCell(Text('${gstCalcItemsList[index].gstRate ?? ''}%')),
                 DataCell(
                   Center(
@@ -671,7 +671,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     columns: [
                       DataColumn(label: Text('No.')),
                       DataColumn(label: Text('Details')),
-                      DataColumn(label: Text('Net Amount')),
+                      DataColumn(label: Text('Base Amount')),
                       DataColumn(label: Text('Rate')),
                       DataColumn(
                         label: Text('GST Amount'),
