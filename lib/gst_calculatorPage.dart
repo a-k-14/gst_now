@@ -190,8 +190,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
         children: [
           // This contains - Base Amount, GST Rate, GST Rate Buttons, swap & Clear All
           Container(
-            margin: EdgeInsets.only(top: kPadding - 3, bottom: kPadding + 5),
-            padding: EdgeInsets.fromLTRB(10, 12, 10, 0),
+            margin: EdgeInsets.only(top: kPadding - 5, bottom: kPadding + 5),
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(kBorderRadius - 2),

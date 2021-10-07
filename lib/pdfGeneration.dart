@@ -1,4 +1,7 @@
 import 'dart:io'; // To create a PDF file at the path
+import 'package:flutter/services.dart'; // To load Roboto font
+import 'package:pdf/widgets.dart'; // To load Roboto font
+
 import 'constants.dart';
 import 'package:path_provider/path_provider.dart'; // To get the document stored path
 import 'package:pdf/pdf.dart'; // To create PDF
@@ -17,6 +20,9 @@ Future<bool> createPDF(
   final pdfGSTDataTable = pw.Document(author: 'GST Now/ar');
 
   PdfColor mainColor = PdfColor.fromInt(0xff0050ab);
+
+  // To avoid error on iOS when using ' like in I'm or don't
+  var fontData = await rootBundle.load("assets/fonts/Roboto-Regular.ttf");
 
   // TODO: Is this try catch block position correct
   try {
@@ -76,8 +82,12 @@ Future<bool> createPDF(
                 constraints: pw.BoxConstraints(
                   maxWidth: 150,
                 ),
-                child: pw.Text('${gstCalcItemsList[index].details}',
-                    style: rowTextStyle),
+                child: pw.Text(
+                  '${gstCalcItemsList[index].details}',
+                  style: rowTextStyle.copyWith(
+                    font: Font.ttf(fontData),
+                  ),
+                ),
               ),
             ),
             pw.Expanded(

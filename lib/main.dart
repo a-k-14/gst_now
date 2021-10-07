@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart'; // For Transparent status bar in SystemChrome
 import 'about.dart';
 import 'constants.dart';
@@ -44,6 +45,14 @@ class MyApp extends StatelessWidget {
           systemOverlayStyle: SystemUiOverlayStyle.light,
           // To set the action icons & back button color
           iconTheme: IconThemeData(color: kAppBarContentColor),
+        ),
+        // This is added because when Roboto is added as font in pubspec.yaml, the text buttons have a thin text. To avoid that the following is added
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
       home: Home(title: title),

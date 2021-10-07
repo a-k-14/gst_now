@@ -211,9 +211,9 @@ Widget gstSummary({
         ),
       ),
       Container(
-        height: 55,
+        height: 58,
         padding:
-            EdgeInsets.only(top: kPadding, left: kPadding, right: kPadding),
+            EdgeInsets.only(top: kPadding + 3, left: kPadding, right: kPadding),
         child: TextField(
           controller: detailsController,
           textCapitalization: TextCapitalization.sentences,
