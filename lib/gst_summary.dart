@@ -22,6 +22,7 @@ Widget gstSummary({
   required Function addGSTCalcItem,
   required Totals totals,
   required TextEditingController detailsController,
+  required Function f,
 }) {
   String baseAmount = gstCalculatorBrain.baseAmount;
   String gstRate = gstCalculatorBrain.rate;
@@ -120,203 +121,223 @@ Widget gstSummary({
   }
 
   // The GST summary widget to be displayed
-  return Container(
-    margin: EdgeInsets.only(left: kPadding, top: kPadding - 6, right: kPadding),
-    child: Column(
-      children: [
-        customSummaryRow(
-          title: Text(
-            'Net Amount',
-            style: kGSTSummaryRowTextStyle1,
-          ),
-          value: Text(
-            baseAmount,
-            style: kGSTSummaryRowTextStyle2,
-          ),
-          color: kGSTSummaryRowBackground1,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(kGSTSummaryBorderRadius),
-            topRight: Radius.circular(kGSTSummaryBorderRadius),
-          ),
-          padding: EdgeInsets.symmetric(
-              horizontal: kPadding + 2, vertical: kPadding + 4),
-        ),
-        customSummaryRow(
-          title: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Text(
-              'GST @ $gstRate%',
-              style: kGSTSummaryRowTextStyle1,
-            ),
-          ),
-          value: Text(
-            gstAmount,
-            style: kGSTSummaryRowTextStyle2,
-          ),
-          color: kGSTSummaryRowBackground2,
-          borderRadius: BorderRadius.only(),
-          // This row has a different padding to accommodate the CGST&SGST section
-          padding: EdgeInsets.fromLTRB(12, 8, 12, 4),
-        ),
-        // We use row and empty 2nd container to get color next to CGST&SGST
-        Row(
+  return Column(
+    children: [
+      Container(
+        margin:
+            EdgeInsets.only(left: kPadding, top: kPadding - 6, right: kPadding),
+        child: Column(
           children: [
-            Container(
-              height: 55,
-              width: 200,
-              padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
-              color: kGSTSummaryRowBackground2,
-              child: SingleChildScrollView(
+            customSummaryRow(
+              title: Text(
+                'Base Amount',
+                style: kGSTSummaryRowTextStyle1,
+              ),
+              value: Text(
+                baseAmount,
+                style: kGSTSummaryRowTextStyle2,
+              ),
+              color: kGSTSummaryRowBackground1,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(kGSTSummaryBorderRadius),
+                topRight: Radius.circular(kGSTSummaryBorderRadius),
+              ),
+              padding: EdgeInsets.symmetric(
+                  horizontal: kPadding + 2, vertical: kPadding + 4),
+            ),
+            customSummaryRow(
+              title: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child:
-                    gstBreakupOperator == 'IGST' ? igstSummary : csgstSummary,
-              ),
-            ),
-            // To fill the empty space below GST Rate value and right to GST breakup with background color
-            Expanded(
-              child: Container(
-                color: kGSTSummaryRowBackground2,
-                height: 55,
-              ),
-            ),
-          ],
-        ),
-        customSummaryRow(
-          title: Text(
-            'Total Amount',
-            style: kGSTSummaryRowTextStyle1,
-          ),
-          value: Text(
-            totalAmount,
-            style: TextStyle(
-              fontSize: kTextSize,
-              color: kMainColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          color: kGSTSummaryRowBackground1,
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(kGSTSummaryBorderRadius),
-            bottomRight: Radius.circular(kGSTSummaryBorderRadius),
-          ),
-          padding: EdgeInsets.symmetric(
-              horizontal: kPadding + 2, vertical: kPadding + 4),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: kPadding + 3, left: 2, right: 2),
-          child: TextField(
-            controller: detailsController,
-            textCapitalization: TextCapitalization.sentences,
-            cursorHeight: 22,
-            cursorColor: kMainColor,
-            decoration: InputDecoration(
-              // Dense only if large screen (width > 600)
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-              labelText: 'Description',
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  // TODO: Cannot use Colors.grey[350] or Colors.grey.shade350
-                  color: Color(0xffD6D6D6),
+                child: Text(
+                  'GST @ $gstRate%',
+                  style: kGSTSummaryRowTextStyle1,
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: kMainColor),
+              value: Text(
+                gstAmount,
+                style: kGSTSummaryRowTextStyle2,
               ),
-              suffixIcon: detailsController.text.isEmpty
-                  ? Text('')
-                  : IconButton(
-                      splashRadius: 20,
-                      icon: Icon(Icons.clear_rounded, size: 18),
-                      onPressed: () {
-                        detailsController.clear();
-                      },
-                    ),
+              color: kGSTSummaryRowBackground2,
+              borderRadius: BorderRadius.only(),
+              // This row has a different padding to accommodate the CGST&SGST section
+              padding: EdgeInsets.fromLTRB(12, 8, 12, 4),
             ),
-          ),
-        ),
-        // To provide 'Add to List' & 'Share' options
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              style: TextButton.styleFrom(primary: kMainColor),
-              onPressed: () {
-                // To stop empty row addition
-                if (baseAmount.isEmpty || gstRate.isEmpty) {
-                  showSnackBar();
-                } else {
-                  GSTCalcItem data = GSTCalcItem(
-                      details: detailsController.text,
-                      baseAmount: baseAmount,
-                      gstRate: gstRate,
-                      gstAmount: gstAmount,
-                      gstBreakupOperator: gstBreakupOperator,
-                      csgstRate: csgstRate,
-                      csgstAmount: csgstAmount,
-                      igstAmount: igstAmount,
-                      totalAmount: totalAmount);
-                  addGSTCalcItem(data);
-                  // To make the totals to be used in Total row of GST DataTable
-                  totals.addToTotals(data);
-                  // To show 'Added' SnackBar after adding the row to the list/GST DataTable
-                  SnackBar snackBar = SnackBar(
-                    content: Container(
-                      child: Text('Added', textAlign: TextAlign.center),
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    backgroundColor: Colors.transparent,
-                    behavior: SnackBarBehavior.floating,
-                    width: 100,
-                    elevation: 0,
-                    duration: Duration(milliseconds: 800),
-                    // padding: EdgeInsets.all(0),
-                  );
-                  // We added .closed.then... to avoid showing SnackBar multiple times when we click 'Add to List' button multiple times very quickly
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(snackBar)
-                      .closed
-                      .then((value) =>
-                          ScaffoldMessenger.of(context).clearSnackBars());
-                }
-                FocusScope.of(context).unfocus();
-              },
-              child: Text('Add to List'),
+            // We use row and empty 2nd container to get color next to CGST&SGST
+            Row(
+              children: [
+                Container(
+                  height: 55,
+                  width: 200,
+                  padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
+                  color: kGSTSummaryRowBackground2,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: gstBreakupOperator == 'IGST'
+                        ? igstSummary
+                        : csgstSummary,
+                  ),
+                ),
+                // To fill the empty space below GST Rate value and right to GST breakup with background color
+                Expanded(
+                  child: Container(
+                    color: kGSTSummaryRowBackground2,
+                    height: 55,
+                  ),
+                ),
+              ],
             ),
-            TextButton(
-              style: TextButton.styleFrom(primary: kMainColor),
-              onPressed: () {
-                String gstBreakup = gstBreakupOperator == 'IGST'
-                    ? 'IGST @ $igstRate% = $igstAmount'
-                    : 'CGST @ $csgstRate% = $csgstAmount\nCGST @ $csgstRate% = $csgstAmount';
-                // We created a details string so as to avoid an empty 1st line if details is empty
-                String details = detailsController.text.isEmpty
-                    ? ''
-                    : '${detailsController.text}\n';
-                String calculationResult = '$details'
-                    'Net Amount = $baseAmount\n'
-                    'GST @ $gstRate% = $gstAmount\n'
-                    'Total Amount = $totalAmount\n'
-                    '----------\n'
-                    '$gstBreakup\n\n'
-                    'via GST Now, download👉: https://curiobeing.github.io/GSTNow.app/';
-                // To stop empty sharing
-                if (baseAmount.isEmpty || gstRate.isEmpty) {
-                  showSnackBar();
-                } else {
-                  share(shareData: calculationResult);
-                }
-              },
-              child: Text('Share'),
+            customSummaryRow(
+              title: Text(
+                'Total Amount',
+                style: kGSTSummaryRowTextStyle1,
+              ),
+              value: Text(
+                totalAmount,
+                style: TextStyle(
+                  fontSize: kTextSize,
+                  color: kMainColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              color: kGSTSummaryRowBackground1,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(kGSTSummaryBorderRadius),
+                bottomRight: Radius.circular(kGSTSummaryBorderRadius),
+              ),
+              padding: EdgeInsets.symmetric(
+                  horizontal: kPadding + 2, vertical: kPadding + 4),
             ),
           ],
         ),
-      ],
-    ),
+      ),
+      Container(
+        height: 55,
+        padding:
+            EdgeInsets.only(top: kPadding, left: kPadding, right: kPadding),
+        child: TextField(
+          controller: detailsController,
+          textCapitalization: TextCapitalization.sentences,
+          cursorHeight: 22,
+          cursorColor: kMainColor,
+          decoration: InputDecoration(
+            // Dense only if large screen (width > 600)
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            labelText: 'Description',
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                // TODO: Cannot use Colors.grey[350] or Colors.grey.shade350
+                color: Color(0xffD6D6D6),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: kMainColor),
+            ),
+            suffixIcon: detailsController.text.isEmpty
+                ? Text('')
+                : IconButton(
+                    splashRadius: 20,
+                    icon: Icon(Icons.clear_rounded, size: 18),
+                    color: kMainColor,
+                    onPressed: () {
+                      detailsController.clear();
+                    },
+                  ),
+          ),
+        ),
+      ),
+      // To provide 'Add to List' & 'Share' options
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: kPadding),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              margin: kTextButtonContainerMargin,
+              height: kTextButtonContainerHeight,
+              child: TextButton(
+                style: TextButton.styleFrom(primary: kMainColor),
+                onPressed: () {
+                  // To stop empty row addition
+                  if (baseAmount.isEmpty || gstRate.isEmpty) {
+                    showSnackBar();
+                  } else {
+                    GSTCalcItem data = GSTCalcItem(
+                        details: detailsController.text,
+                        baseAmount: baseAmount,
+                        gstRate: gstRate,
+                        gstAmount: gstAmount,
+                        gstBreakupOperator: gstBreakupOperator,
+                        csgstRate: csgstRate,
+                        csgstAmount: csgstAmount,
+                        igstAmount: igstAmount,
+                        totalAmount: totalAmount);
+                    addGSTCalcItem(data);
+                    // To make the totals to be used in Total row of GST DataTable
+                    totals.addToTotals(data);
+                    // To show 'Added' SnackBar after adding the row to the list/GST DataTable
+                    SnackBar snackBar = SnackBar(
+                      content: Container(
+                        child: Text('Added', textAlign: TextAlign.center),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      behavior: SnackBarBehavior.floating,
+                      width: 100,
+                      elevation: 0,
+                      duration: Duration(milliseconds: 800),
+                      // padding: EdgeInsets.all(0),
+                    );
+                    // We added .closed.then... to avoid showing SnackBar multiple times when we click 'Add to List' button multiple times very quickly
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(snackBar)
+                        .closed
+                        .then((value) =>
+                            ScaffoldMessenger.of(context).clearSnackBars());
+                  }
+                  FocusScope.of(context).unfocus();
+                },
+                child: Text('Add to List'),
+              ),
+            ),
+            Container(
+              margin: kTextButtonContainerMargin,
+              height: kTextButtonContainerHeight,
+              child: TextButton(
+                style: TextButton.styleFrom(primary: kMainColor),
+                onPressed: () {
+                  String gstBreakup = gstBreakupOperator == 'IGST'
+                      ? 'IGST @ $igstRate% = $igstAmount'
+                      : 'CGST @ $csgstRate% = $csgstAmount\nCGST @ $csgstRate% = $csgstAmount';
+                  // We created a details string so as to avoid an empty 1st line if details is empty
+                  String details = detailsController.text.isEmpty
+                      ? ''
+                      : '${detailsController.text}\n';
+                  String calculationResult = '$details'
+                      'Net Amount = $baseAmount\n'
+                      'GST @ $gstRate% = $gstAmount\n'
+                      'Total Amount = $totalAmount\n'
+                      '----------\n'
+                      '$gstBreakup\n\n'
+                      'via GST Now, download👉: https://curiobeing.github.io/GSTNow.app/';
+                  // To stop empty sharing
+                  if (baseAmount.isEmpty || gstRate.isEmpty) {
+                    showSnackBar();
+                  } else {
+                    share(shareData: calculationResult);
+                  }
+                },
+                child: Text('Share'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
   );
 }
 
@@ -583,8 +604,8 @@ class _GSTDataTableState extends State<GSTDataTable> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(height: kSizedBoxHeight),
-        Divider(height: 8),
+        SizedBox(height: kSizedBoxHeight * 2),
+        Divider(height: 20, thickness: 2, color: Colors.grey[200]),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: kPadding * 2),
           child: Row(
@@ -634,10 +655,11 @@ class _GSTDataTableState extends State<GSTDataTable> {
           ),
           child: Container(
             margin: EdgeInsets.only(
-                left: kPadding,
-                right: kPadding * 1.5,
-                // bottom: kPadding,
-                top: kPadding - 4),
+              left: kPadding,
+              right: kPadding * 1.5,
+              // bottom: kPadding,
+              // top: kPadding - 4,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(kBorderRadius - 2),

@@ -19,6 +19,11 @@ double wideScreenWidth = 600;
 // Overall padding and padding in between the widgets
 double kPadding = 10;
 
+// To control the height of TextButtons
+double kTextButtonContainerHeight = 30;
+EdgeInsetsGeometry kTextButtonContainerMargin =
+    EdgeInsets.symmetric(vertical: 5);
+
 // Alternating colors for GST summary table
 Color kGSTSummaryRowBackground1 = Color(0x1A8690B1);
 Color kGSTSummaryRowBackground2 = Color(0x58690B1);

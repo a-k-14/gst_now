@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -257,33 +258,41 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      tooltip: 'Reverse GST Rates order',
-                      // splash is shown behind container. To avoid that we set this
-                      splashRadius: 1,
-                      icon: Icon(
-                        Icons.swap_horiz_rounded,
-                        color: isGSTRatesListReverse
-                            ? kMainColor
-                            : Colors.grey[350],
+                    Container(
+                      // margin: kTextButtonContainerMargin, // we do not provide margin as this pushes icon button a little down
+                      height: kTextButtonContainerHeight,
+                      child: IconButton(
+                        tooltip: 'Reverse GST Rates order',
+                        // splash is shown behind container. To avoid that we set this
+                        splashRadius: 1,
+                        icon: Icon(
+                          Icons.swap_horiz_rounded,
+                          color: isGSTRatesListReverse
+                              ? kMainColor
+                              : Colors.grey[350],
+                        ),
+                        onPressed: () {
+                          gstRatesList = gstRatesList.reversed.toList();
+                          _setIsReversedValue();
+                        },
                       ),
-                      onPressed: () {
-                        gstRatesList = gstRatesList.reversed.toList();
-                        _setIsReversedValue();
-                      },
                     ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        primary: kMainColor,
+                    Container(
+                      margin: kTextButtonContainerMargin,
+                      height: kTextButtonContainerHeight,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: kMainColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            amountController.clear();
+                            gstRateController.clear();
+                            detailsController.clear();
+                          });
+                        },
+                        child: Text('Clear All'),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          amountController.clear();
-                          gstRateController.clear();
-                          detailsController.clear();
-                        });
-                      },
-                      child: Text('Clear All'),
                     ),
                   ],
                 ),
@@ -295,7 +304,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             wideScreen: wideScreen,
             f: updateGSTOperator,
           ),
-          SizedBox(height: kSizedBoxHeight),
+          SizedBox(height: kSizedBoxHeight - 2),
           gstSummary(
             gstCalculatorBrain: _gstCalculatorBrain,
             context: context,
@@ -303,6 +312,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             addGSTCalcItem: addGSTCalcItem,
             totals: totals,
             detailsController: detailsController,
+            f: updateGSTBreakupOperator,
           ),
           // SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
