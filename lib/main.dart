@@ -46,14 +46,6 @@ class MyApp extends StatelessWidget {
           // To set the action icons & back button color
           iconTheme: IconThemeData(color: kAppBarContentColor),
         ),
-        // This is added because when Roboto is added as font in pubspec.yaml, the text buttons have a thin text. To avoid that the following is added
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            textStyle: TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
       ),
       home: Home(title: title),
     );
