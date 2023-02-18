@@ -1,4 +1,4 @@
-import 'dart:ui';
+// import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +42,9 @@ Widget customTextField({
       ),
       // Suffix is only for GST Rate
       suffix: suffix == null
-          ? Text('')
+          ? const Text('')
           : Text(suffix, style: TextStyle(color: kMainColor)),
-      enabledBorder: OutlineInputBorder(
+      enabledBorder: const OutlineInputBorder(
         borderSide: BorderSide(
           // TODO: Cannot use Colors.grey[350] or Colors.grey.shade350
           color: Color(0xffD6D6D6),
@@ -71,9 +71,9 @@ class GSTRateButton extends StatelessWidget {
     return Container(
       // Contains the SCS with GST Rate Buttons
       padding: EdgeInsets.all(kPadding - 4),
-      margin: EdgeInsets.only(top: 5),
+      margin: const EdgeInsets.only(top: 5),
       decoration: BoxDecoration(
-        color: Color.fromARGB(22, 118, 118, 128),
+        color: const Color.fromARGB(22, 118, 118, 128),
         borderRadius: BorderRadius.circular(kBorderRadius),
       ),
       child: SingleChildScrollView(
@@ -87,17 +87,15 @@ class GSTRateButton extends StatelessWidget {
                 height: 32,
                 // Space between the buttons
                 // TODO: The bottom shadow of the buttons is not visible. If we give bottom margin we can see it.
-                margin: EdgeInsets.only(right: 6),
+                margin: const EdgeInsets.only(right: 6),
                 child: ElevatedButton(
-                  child: Text(
-                    '${gstRate.toInt()}%',
-                    style: TextStyle(color: Colors.black),
-                  ),
                   style: ElevatedButton.styleFrom(
                     // Button color
-                    primary: Colors.white,
+                    // primary: Colors.white,
+                    backgroundColor: Colors.white,
                     // Splash color
-                    onPrimary: Colors.grey[350],
+                    // onPrimary: Colors.grey[350],
+                    foregroundColor: Colors.grey[350],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -105,6 +103,10 @@ class GSTRateButton extends StatelessWidget {
                   onPressed: () {
                     onTap(gstRate);
                   },
+                  child: Text(
+                    '${gstRate.toInt()}%',
+                    style: const TextStyle(color: Colors.black),
+                  ),
                 ),
               ),
           ],
@@ -186,7 +188,7 @@ class _GSTTipState extends State<GSTTip> {
             return Container(
               padding: EdgeInsets.only(left: kPadding),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 "When to use CGST&SGST vs IGST?",
                 style: TextStyle(color: Colors.grey),
               ),
@@ -230,7 +232,7 @@ class _GSTTipState extends State<GSTTip> {
               flex: 2,
               child: Text(
                 tipValue,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.grey,
                   wordSpacing: 1,
                 ),
@@ -283,7 +285,7 @@ class _GSTTipState extends State<GSTTip> {
             share(shareData: shareAppData);
           },
           style: TextButton.styleFrom(
-            primary: kMainColor,
+            foregroundColor: kMainColor,
           ),
           child: Text('Share the app & spread the word'),
         ),
@@ -293,9 +295,9 @@ class _GSTTipState extends State<GSTTip> {
 }
 
 // To open the link on click of button
-void launchURL({required String url}) async {
-  if (await (canLaunch(url))) {
-    await launch(
+void launchURL({required Uri url}) async {
+  if (await (canLaunchUrl(url))) {
+    await launchUrl(
       url,
       /*
       By default URL is opened in SafariViewController and the problem is that the status bar content - time, network etc. are in white and
@@ -303,9 +305,25 @@ void launchURL({required String url}) async {
       There seems to be error with URL launcher package.
       TODO: check if the above error is resolved for url_launcher package
       */
-      forceSafariVC: false,
+      // forceSafariVC: false,
     );
   } else {
     throw 'Cannot connect. Please try again.';
+  }
+}
+
+// To show edit button for editing the rates
+class EditRates extends StatelessWidget {
+  const EditRates({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () => {},
+      icon: Icon(
+        Icons.edit,
+        color: Colors.grey[350],
+      ),
+    );
   }
 }

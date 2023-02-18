@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -191,13 +191,13 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           // This contains - Base Amount, GST Rate, GST Rate Buttons, swap & Clear All
           Container(
             margin: EdgeInsets.only(top: kPadding - 5, bottom: kPadding + 5),
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(kBorderRadius - 2),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x1A000000),
+                  color: const Color(0x1A000000),
                   // offset: Offset(0, 2),
                   blurRadius: kBorderRadius,
                   spreadRadius: 0,
@@ -253,7 +253,15 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                     ),
                   ],
                 ),
-                GSTRateButton(gstRatesList: gstRatesList, onTap: gstRateSetter),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GSTRateButton(
+                          gstRatesList: gstRatesList, onTap: gstRateSetter),
+                    ),
+                    const EditRates(),
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,7 +290,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       height: kTextButtonContainerHeight,
                       child: TextButton(
                         style: TextButton.styleFrom(
-                          primary: kMainColor,
+                          foregroundColor: kMainColor,
                         ),
                         onPressed: () {
                           setState(() {

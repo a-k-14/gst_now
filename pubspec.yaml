@@ -27,7 +27,7 @@ dependencies:
   # To store GST Rates Button Reverse setting
   shared_preferences: ^2.0.6
   # To share app
-  share_plus: ^3.0.1
+  share_plus: ^4.0.4
   # To open store links and social media/communication links
   url_launcher: ^6.0.9
   # To create PDFs
@@ -43,6 +43,7 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
 

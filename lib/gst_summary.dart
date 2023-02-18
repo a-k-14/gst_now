@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'pdfGeneration.dart';
 import 'constants.dart';
@@ -256,7 +256,7 @@ Widget gstSummary({
               margin: kTextButtonContainerMargin,
               height: kTextButtonContainerHeight,
               child: TextButton(
-                style: TextButton.styleFrom(primary: kMainColor),
+                style: TextButton.styleFrom(foregroundColor: kMainColor),
                 onPressed: () {
                   // To stop empty row addition
                   if (baseAmount.isEmpty || gstRate.isEmpty) {
@@ -308,7 +308,7 @@ Widget gstSummary({
               margin: kTextButtonContainerMargin,
               height: kTextButtonContainerHeight,
               child: TextButton(
-                style: TextButton.styleFrom(primary: kMainColor),
+                style: TextButton.styleFrom(foregroundColor: kMainColor),
                 onPressed: () {
                   String gstBreakup = gstBreakupOperator == 'IGST'
                       ? 'IGST @ $igstRate% = $igstAmount'
@@ -482,11 +482,12 @@ class _GSTDataTableState extends State<GSTDataTable> {
                                 onPressed: () {
                                   newDetailsController.clear();
                                 },
-                                style:
-                                    TextButton.styleFrom(primary: kMainColor),
+                                style: TextButton.styleFrom(
+                                    foregroundColor: kMainColor),
                                 child: Text('Clear')),
                             TextButton(
-                              style: TextButton.styleFrom(primary: kMainColor),
+                              style: TextButton.styleFrom(
+                                  foregroundColor: kMainColor),
                               child: Text('Done'),
                               onPressed: () {
                                 // To update the new details in the row
@@ -520,12 +521,12 @@ class _GSTDataTableState extends State<GSTDataTable> {
                                 children: [
                                   Text(
                                     'CGST: ${gstCalcItemsList[index].csgstAmount ?? ''}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 10, color: Colors.grey),
                                   ),
                                   Text(
                                     'SGST: ${gstCalcItemsList[index].csgstAmount ?? ''}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 10, color: Colors.grey),
                                   ),
                                 ],
@@ -618,7 +619,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
               // This button is to clear list & clear selected items from the list
               // It does 2 jobs - if selectedRows is empty then it clears list, else it clears selected items
               TextButton(
-                style: TextButton.styleFrom(primary: kMainColor),
+                style: TextButton.styleFrom(foregroundColor: kMainColor),
                 onPressed: () {
                   if (selectedRows.isEmpty) {
                     // To clear the list and reset the totals to 0
@@ -736,7 +737,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
               }
             });
           },
-          style: TextButton.styleFrom(primary: kMainColor),
+          style: TextButton.styleFrom(foregroundColor: kMainColor),
           child: Text('Share List'),
         ),
       ],

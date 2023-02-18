@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+// import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart'; // For Transparent status bar in SystemChrome
 import 'about.dart';
 import 'constants.dart';
