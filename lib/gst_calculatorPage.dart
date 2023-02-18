@@ -1,4 +1,6 @@
 // import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +11,8 @@ import 'gst_calculator_brain.dart';
 import 'gst_summary.dart';
 
 class GSTCalculatorPage extends StatefulWidget {
+  const GSTCalculatorPage({Key? key}) : super(key: key);
+
   @override
   _GSTCalculatorPageState createState() => _GSTCalculatorPageState();
 }
@@ -24,8 +28,30 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // To hold the details to be added to the GST DataTable
   // We use it in gstSummary, but we declare it here so that this can be cleared on click of 'Clear All' button
   final TextEditingController detailsController = TextEditingController();
+  // To hold gst rates in pop up for edit
+  final TextEditingController getRateOptionController = TextEditingController();
 
   List<double> gstRatesList = [1, 3, 5, 12, 18, 28];
+  // We use this to reset GST rates on click of RESET button in edit rates pop up
+  List<double> defaultGSTRatesList = [1, 3, 5, 12, 18, 28];
+
+  // We use this to set new rate in the rate list array
+  void updateRate(int index, double newRate) {
+    setState(() {
+      gstRatesList[index] = newRate;
+      // print(gstRatesList);
+    });
+  }
+
+  // We use this to reset GST rates to default
+  void resetGstRatesList() {
+    // print(gstRatesList);
+    setState(() {
+      gstRatesList = [...defaultGSTRatesList];
+      // print(gstRatesList);
+    });
+  }
+
   // To set the sort icon color
   bool isGSTRatesListReverse = false;
 
@@ -43,7 +69,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   }
 
   // Instance of GST Calculator Brain to perform calculations and get results
-  static GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
+  static final GSTCalculatorBrain _gstCalculatorBrain = GSTCalculatorBrain(
       // initialValue: initialValueController,
       // gstRate: gstRateController,
       );
@@ -80,6 +106,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     amountController.dispose();
     gstRateController.dispose();
     detailsController.dispose();
+    getRateOptionController.dispose();
     super.dispose();
   }
 
@@ -208,7 +235,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               children: [
                 Row(
                   children: [
-                    Container(
+                    SizedBox(
                       // To ensure Initial Value and GST Rate take same width
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
@@ -232,7 +259,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                 SizedBox(height: kSizedBoxHeight + 5),
                 Row(
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: Text(
                         'GST Rate',
@@ -257,16 +284,23 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                   children: [
                     Expanded(
                       child: GSTRateButton(
-                          gstRatesList: gstRatesList, onTap: gstRateSetter),
+                        gstRatesList: gstRatesList,
+                        onTap: gstRateSetter,
+                      ),
                     ),
-                    const EditRates(),
+                    EditRates(
+                      gstRatesList: gstRatesList,
+                      updateRate: updateRate,
+                      resetGstRatesList: resetGstRatesList,
+                      getRateOptionController: getRateOptionController,
+                    ),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                       // margin: kTextButtonContainerMargin, // we do not provide margin as this pushes icon button a little down
                       height: kTextButtonContainerHeight,
                       child: IconButton(
@@ -299,7 +333,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                             detailsController.clear();
                           });
                         },
-                        child: Text('Clear All'),
+                        child: const Text('Clear All'),
                       ),
                     ),
                   ],
@@ -308,7 +342,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             ),
           ),
           GSTOperatorTab(
-            operatorValues: ['+ Add GST', '- Less GST'],
+            operatorValues: const ['+ Add GST', '- Less GST'],
             wideScreen: wideScreen,
             f: updateGSTOperator,
           ),
@@ -324,7 +358,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
           ),
           // SizedBox(height: kSizedBoxHeight),
           GSTOperatorTab(
-            operatorValues: ['CGST & SGST', 'IGST'],
+            operatorValues: const ['CGST & SGST', 'IGST'],
             wideScreen: wideScreen,
             f: updateGSTBreakupOperator,
           ),

@@ -1,5 +1,7 @@
 // import 'dart:ui';
 
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +36,7 @@ Widget customTextField({
     decoration: InputDecoration(
       // Dense only if large screen (width > 600)
       isDense: wideScreen ? false : true,
-      contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       hintText: hintText,
       hintStyle: TextStyle(
         fontSize: kTextSize - 1,
@@ -64,7 +66,9 @@ class GSTRateButton extends StatelessWidget {
   // To set the GST rate value into the GST Rate TextField
   final Function onTap;
 
-  GSTRateButton({required this.gstRatesList, required this.onTap});
+  const GSTRateButton(
+      {Key? key, required this.gstRatesList, required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +87,8 @@ class GSTRateButton extends StatelessWidget {
             for (double gstRate in gstRatesList)
               Container(
                 // Width & height given to keep all buttons consistent
-                width: 64,
-                height: 32,
+                width: 72,
+                height: 36,
                 // Space between the buttons
                 // TODO: The bottom shadow of the buttons is not visible. If we give bottom margin we can see it.
                 margin: const EdgeInsets.only(right: 6),
@@ -104,7 +108,7 @@ class GSTRateButton extends StatelessWidget {
                     onTap(gstRate);
                   },
                   child: Text(
-                    '${gstRate.toInt()}%',
+                    '${gstRate}%',
                     style: const TextStyle(color: Colors.black),
                   ),
                 ),
@@ -124,10 +128,12 @@ class GSTOperatorTab extends StatefulWidget {
   // The function to send the gstOperator/gstBreakupOperator value to GST Calculator Brain
   final Function f;
 
-  GSTOperatorTab(
-      {required this.operatorValues,
+  const GSTOperatorTab(
+      {Key? key,
+      required this.operatorValues,
       required this.wideScreen,
-      required this.f});
+      required this.f})
+      : super(key: key);
 
   @override
   _GSTOperatorTabState createState() => _GSTOperatorTabState();
@@ -166,6 +172,8 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
 // To show GST Tip table on expansion
 // We use stateful widget for the Expansion Panel List to work
 class GSTTip extends StatefulWidget {
+  const GSTTip({Key? key}) : super(key: key);
+
   @override
   _GSTTipState createState() => _GSTTipState();
 }
@@ -314,15 +322,128 @@ void launchURL({required Uri url}) async {
 
 // To show edit button for editing the rates
 class EditRates extends StatelessWidget {
-  const EditRates({Key? key}) : super(key: key);
+  // The list of rates to be displayed as buttons
+  final List<double> gstRatesList;
+  // To set the GST rate value into the GST Rate TextField
+  final Function updateRate;
+  final Function resetGstRatesList;
+
+  final TextEditingController getRateOptionController;
+
+  const EditRates({
+    Key? key,
+    required this.gstRatesList,
+    required this.updateRate,
+    required this.getRateOptionController,
+    required this.resetGstRatesList,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () => {},
-      icon: Icon(
-        Icons.edit,
-        color: Colors.grey[350],
+    return Container(
+      width: 40,
+      margin: const EdgeInsets.only(left: 6),
+      alignment: Alignment.center,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
+          ),
+          padding: EdgeInsets.zero,
+        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            // barrierDismissible: false, // user must tap Done button!
+            builder: (BuildContext context) {
+              return SingleChildScrollView(
+                // TODO: Why this and details column width based on wideScreen does not work
+                // So we use MediaQuery here directly. Defining it in the start of class also doesn't work?
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.width > wideScreenWidth
+                        ? 0
+                        : 100),
+                child: AlertDialog(
+                  title: const Text('Edit GST Rates'),
+                  content: Column(
+                    children: [
+                      for (int i = 0; i < gstRatesList.length; i++)
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          // height: 40,
+                          child: TextFormField(
+                            initialValue: gstRatesList[i].toString(),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'(^(\d{1,})\.?(\d{0,2}))'),
+                              ),
+                              // To limit the number of digits
+                              // To allow decimal point only once and up to 2 decimal places
+                              // To deny space
+                              // We can use 'maxLength' & 'counterText' alternatively
+                              LengthLimitingTextInputFormatter(5),
+                            ],
+                            keyboardType: TextInputType.number,
+                            // controller: getRateOptionController,
+                            cursorColor: kMainColor,
+                            onChanged: (text) {
+                              updateRate(
+                                i,
+                                text.isEmpty ? 0.0 : double.parse(text),
+                              );
+                            },
+                            cursorHeight: 18,
+                            // autofocus: true,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: kMainColor)),
+                              // filled: true,
+                              fillColor: Colors.grey[50],
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(kBorderRadius)),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          resetGstRatesList();
+                          Navigator.of(context).pop();
+                        },
+                        style:
+                            TextButton.styleFrom(foregroundColor: kMainColor),
+                        // TODO: Reset function
+                        child: const Text('Reset')),
+                    TextButton(
+                      style: TextButton.styleFrom(foregroundColor: kMainColor),
+                      child: const Text('Done'),
+                      onPressed: () {
+                        // To update the new details in the row
+                        // updateDetails(index, newDetailsController.text);
+                        // updateRate(
+                        //     1, double.parse(getRateOptionController.text));
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        child: Icon(
+          Icons.edit_rounded,
+          color: Colors.grey.shade400,
+          size: 18,
+        ),
       ),
     );
   }
