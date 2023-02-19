@@ -1,5 +1,5 @@
 // import 'package:flutter/cupertino.dart';
-import 'dart:developer';
+// import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +29,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   // We use it in gstSummary, but we declare it here so that this can be cleared on click of 'Clear All' button
   final TextEditingController detailsController = TextEditingController();
   // To hold gst rates in pop up for edit
-  final TextEditingController getRateOptionController = TextEditingController();
+  // final TextEditingController getRateOptionController = TextEditingController();
 
   List<double> gstRatesList = [1, 3, 5, 12, 18, 28];
   // We use this to reset GST rates on click of RESET button in edit rates pop up
@@ -40,6 +40,31 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     setState(() {
       gstRatesList[index] = newRate;
       // print(gstRatesList);
+      // we call this to set new GST rates in local storage
+      _setGstRatesList();
+    });
+  }
+
+  // To store the edited gst rates list to be used when app is opened next time
+  // This is called everytime the swap icon button below GST Rates buttons is clicked
+  void _setGstRatesList() async {
+    // Instance of SharedPreference
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // shared prefs stores only few types of data. so we convert the array of doubles to an array strings and then store it
+      prefs.setStringList(
+          'items', gstRatesList.map((e) => e.toString()).toList());
+    });
+  }
+
+  // To get the stored GST rates list
+  void _loadGstRatesList() async {
+    // Instance of SharedPreference
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // Get GST rates list which is stored as list of strings, and then convert that to double
+      gstRatesList =
+          prefs.getStringList('items')!.map((e) => double.parse(e)).toList();
     });
   }
 
@@ -94,6 +119,8 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     });
     // To get the order of GST Rates list
     _loadIsReversedValue();
+    // To get GST rates list
+    _loadGstRatesList();
     detailsController.addListener(() {
       setState(() {});
     });
@@ -106,7 +133,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
     amountController.dispose();
     gstRateController.dispose();
     detailsController.dispose();
-    getRateOptionController.dispose();
+    // getRateOptionController.dispose();
     super.dispose();
   }
 
@@ -292,7 +319,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
                       gstRatesList: gstRatesList,
                       updateRate: updateRate,
                       resetGstRatesList: resetGstRatesList,
-                      getRateOptionController: getRateOptionController,
+                      // getRateOptionController: getRateOptionController,
                     ),
                   ],
                 ),
@@ -369,7 +396,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             updateDetails: updateDetails,
             totals: totals,
           ),
-          GSTTip(),
+          const GSTTip(),
         ],
       ),
     );

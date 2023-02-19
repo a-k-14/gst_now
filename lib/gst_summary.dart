@@ -235,7 +235,7 @@ Widget gstSummary({
               borderSide: BorderSide(color: kMainColor),
             ),
             suffixIcon: detailsController.text.isEmpty
-                ? Text('')
+                ? const Text('')
                 : IconButton(
                     splashRadius: 20,
                     icon: const Icon(Icons.clear_rounded, size: 18),
@@ -511,13 +511,13 @@ class _GSTDataTableState extends State<GSTDataTable> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(gstCalcItemsList[index].gstAmount ?? ''),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         // To check for CGST&SGST/IGST and display accordingly
                         gstCalcItemsList[index].gstBreakupOperator == 'IGST'
                             ? Text(
                                 'IGST: ${gstCalcItemsList[index].gstAmount ?? ''}',
-                                style:
-                                    TextStyle(fontSize: 10, color: Colors.grey),
+                                style: const TextStyle(
+                                    fontSize: 10, color: Colors.grey),
                               )
                             : Column(
                                 children: [
@@ -550,56 +550,62 @@ class _GSTDataTableState extends State<GSTDataTable> {
     // 5 - tTotalAmount
     rowsList.insert(
         0,
-        DataRow(color: MaterialStateProperty.all(Color(0x1AC1C1C1)), cells: [
-          DataCell(Text('')),
-          DataCell(Text(
-            'Total',
-            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
-          )),
-          DataCell(Text(
-            totals.tAmountString(1),
-            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
-          )),
-          DataCell(Text('')),
-          DataCell(
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    totals.tAmountString(2),
-                    style: TextStyle(
-                        color: kMainColor, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(height: 4),
-                  // To check for CGST&SGST/IGST and display accordingly
-                  Column(
+        DataRow(
+            color: MaterialStateProperty.all(const Color(0x1AC1C1C1)),
+            cells: [
+              const DataCell(Text('')),
+              DataCell(Text(
+                'Total',
+                style:
+                    TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+              )),
+              DataCell(Text(
+                totals.tAmountString(1),
+                style:
+                    TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+              )),
+              const DataCell(Text('')),
+              DataCell(
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'CGST: ${totals.tAmountString(3)}',
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                        totals.tAmountString(2),
+                        style: TextStyle(
+                            color: kMainColor, fontWeight: FontWeight.w500),
                       ),
-                      Text(
-                        'SGST: ${totals.tAmountString(3)}',
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.grey),
-                      ),
-                      Text(
-                        'IGST: ${totals.tAmountString(4)}',
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.grey),
+                      const SizedBox(height: 4),
+                      // To check for CGST&SGST/IGST and display accordingly
+                      Column(
+                        children: [
+                          Text(
+                            'CGST: ${totals.tAmountString(3)}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.grey),
+                          ),
+                          Text(
+                            'SGST: ${totals.tAmountString(3)}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.grey),
+                          ),
+                          Text(
+                            'IGST: ${totals.tAmountString(4)}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.grey),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          DataCell(Text(
-            totals.tAmountString(5),
-            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
-          )),
-        ]));
+              DataCell(Text(
+                totals.tAmountString(5),
+                style:
+                    TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+              )),
+            ]));
 
     return rowsList;
   }
@@ -692,7 +698,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     columnSpacing: 20, // default is 56
                     headingRowHeight: 42, // default is 56
                     headingRowColor:
-                        MaterialStateProperty.all(Color(0x1AC1C1C1)),
+                        MaterialStateProperty.all(const Color(0x1AC1C1C1)),
                     showCheckboxColumn: true,
                     horizontalMargin: 20,
                     columns: const [
@@ -718,9 +724,9 @@ class _GSTDataTableState extends State<GSTDataTable> {
             // We generate PDF by calling createPDF function and if there is any error in generating PDf we show SnackBar
             createPDF(gstCalcItemsList, totals).then((value) {
               if (value) {
-                print(value);
+                // print(value);
               } else {
-                print(value);
+                // print(value);
                 // To show SnackBar on error
                 SnackBar snackBar = SnackBar(
                   elevation: 0,
@@ -735,7 +741,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     label: 'Ok',
                     onPressed: () {},
                   ),
-                  duration: Duration(seconds: 2),
+                  duration: const Duration(seconds: 2),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }

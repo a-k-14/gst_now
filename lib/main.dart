@@ -17,12 +17,14 @@ TODO: decimals precision - how many and option to set by user
 4. edit rates and change the order
 */
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of application.
 
   final String title = 'GST Now';
+
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +57,11 @@ class MyApp extends StatelessWidget {
 class Home extends StatelessWidget {
   final String title; // To be used in App Bar
 
-  Home({required this.title});
+  const Home({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
 
@@ -89,7 +91,7 @@ class Home extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(Icons.info_outline_rounded),
+                icon: const Icon(Icons.info_outline_rounded),
               ),
               IconButton(
                 tooltip: 'Share App',
@@ -97,11 +99,11 @@ class Home extends StatelessWidget {
                 onPressed: () {
                   share(shareData: shareAppData);
                 },
-                icon: Icon(Icons.share_rounded),
+                icon: const Icon(Icons.share_rounded),
               ),
             ],
           ),
-          body: GSTCalculatorPage(),
+          body: const GSTCalculatorPage(),
         ),
       ),
     );

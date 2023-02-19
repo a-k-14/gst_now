@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'constants.dart';
@@ -11,6 +11,8 @@ class AboutPage extends StatelessWidget {
   // To set the scroll bar visibility
   final ScrollController scrollController = ScrollController();
 
+  AboutPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // To set the size of help.png & scroll bar visibility
@@ -18,7 +20,7 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Help & About'),
+        title: const Text('Help & About'),
         actions: [
           IconButton(
             tooltip: 'Share App',
@@ -26,7 +28,7 @@ class AboutPage extends StatelessWidget {
             onPressed: () {
               share(shareData: shareAppData);
             },
-            icon: Icon(Icons.share_rounded),
+            icon: const Icon(Icons.share_rounded),
           ),
         ],
       ),
@@ -45,7 +47,7 @@ class AboutPage extends StatelessWidget {
               child: Container(
                 height: wideScreen ? 550 : 400,
                 decoration: BoxDecoration(
-                  color: Color(0xfffafafa),
+                  color: const Color(0xfffafafa),
                   borderRadius: BorderRadius.circular(kBorderRadius),
                   border: Border.all(color: Colors.grey.shade100),
                 ),
@@ -60,8 +62,8 @@ class AboutPage extends StatelessWidget {
                           Image.asset('images/help.png'),
                           SizedBox(
                             width: 2,
-                            child: Container(color: Colors.grey[200]),
                             height: 200,
+                            child: Container(color: Colors.grey[200]),
                           ),
                           Image.asset('images/help2.png'),
                         ],
@@ -69,34 +71,21 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(height: 30),
+            const Divider(height: 30),
             Text(
               'About',
               style: TextStyle(fontSize: 18, color: kMainColor),
             ),
             SizedBox(height: kSizedBoxHeight),
             Text(
-              '👋 I am Akshay - A Chartered Accountant by profession & a technology enthusiast by passion. '
-              'In my pursuit to make complex FAT (Finance, Accounting, & Taxation) concepts & tasks simple & easy with the help of technology, I\'ve started with this GST Calculator app which is made with flutter.',
+              '👋 I am Akshay - developer of this app. I\'m a Chartered Accountant by profession & a developer by passion. ',
               style: aboutPageTextStyle,
             ),
-            const Divider(),
+            // const Divider(),
             Wrap(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    share(shareData: shareAppData);
-                  },
-                  child: Text(
-                    'Spread the word',
-                    style: aboutPageTextStyle.copyWith(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
                 Text(
-                  'and if you have any feedback, please drop a message:',
+                  'If you have any feedback, please drop a message:',
                   style: aboutPageTextStyle,
                 ),
                 ActionChip(

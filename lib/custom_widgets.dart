@@ -1,6 +1,6 @@
 // import 'dart:ui';
 
-import 'dart:developer';
+// import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +87,7 @@ class GSTRateButton extends StatelessWidget {
             for (double gstRate in gstRatesList)
               Container(
                 // Width & height given to keep all buttons consistent
-                width: 72,
+                // width: 82,
                 height: 36,
                 // Space between the buttons
                 // TODO: The bottom shadow of the buttons is not visible. If we give bottom margin we can see it.
@@ -108,7 +108,7 @@ class GSTRateButton extends StatelessWidget {
                     onTap(gstRate);
                   },
                   child: Text(
-                    '${gstRate}%',
+                    '$gstRate%',
                     style: const TextStyle(color: Colors.black),
                   ),
                 ),
@@ -283,7 +283,7 @@ class _GSTTipState extends State<GSTTip> {
         ),
         // This is placed with the tip table so that it will not stick out in the home screen
         Text(
-          '\nMade with Flutter 💙 | ar 🤗',
+          '\nMade with Flutter 💙 | ar',
           textAlign: TextAlign.center,
           style: kGSTSummaryBreakupTextStyle,
         ),
@@ -295,7 +295,7 @@ class _GSTTipState extends State<GSTTip> {
           style: TextButton.styleFrom(
             foregroundColor: kMainColor,
           ),
-          child: Text('Share the app & spread the word'),
+          child: const Text('Share the app & spread the word'),
         ),
       ],
     );
@@ -328,13 +328,12 @@ class EditRates extends StatelessWidget {
   final Function updateRate;
   final Function resetGstRatesList;
 
-  final TextEditingController getRateOptionController;
+  // final TextEditingController getRateOptionController;
 
   const EditRates({
     Key? key,
     required this.gstRatesList,
     required this.updateRate,
-    required this.getRateOptionController,
     required this.resetGstRatesList,
   }) : super(key: key);
 
@@ -439,9 +438,9 @@ class EditRates extends StatelessWidget {
             },
           );
         },
-        child: Icon(
+        child: const Icon(
           Icons.edit_rounded,
-          color: Colors.grey.shade400,
+          color: Colors.black54,
           size: 18,
         ),
       ),
