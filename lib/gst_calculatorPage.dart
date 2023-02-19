@@ -75,6 +75,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       gstRatesList = [...defaultGSTRatesList];
       // print(gstRatesList);
     });
+    _setGstRatesList();
   }
 
   // To set the sort icon color
