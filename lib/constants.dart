@@ -3,8 +3,8 @@ import 'package:share_plus/share_plus.dart';
 
 // This file is to store the constants for the app
 
-Color kMainColor = Color(0xff0050ab);
-Color kAppBarContentColor = Color(0xffebf4ff);
+Color kMainColor = const Color(0xff0050ab);
+Color kAppBarContentColor = const Color(0xffebf4ff);
 
 double kBorderRadius = 8;
 double kGSTSummaryBorderRadius = 6;
@@ -22,11 +22,11 @@ double kPadding = 10;
 // To control the height of TextButtons
 double kTextButtonContainerHeight = 30;
 EdgeInsetsGeometry kTextButtonContainerMargin =
-    EdgeInsets.symmetric(vertical: 5);
+    const EdgeInsets.symmetric(vertical: 5);
 
 // Alternating colors for GST summary table
-Color kGSTSummaryRowBackground1 = Color(0x1A8690B1);
-Color kGSTSummaryRowBackground2 = Color(0x58690B1);
+Color kGSTSummaryRowBackground1 = const Color(0x1A8690B1);
+Color kGSTSummaryRowBackground2 = const Color(0x058690b1);
 TextStyle kGSTSummaryRowTextStyle1 = TextStyle(
   fontSize: kTextSize,
   color: Colors.grey[700],
@@ -58,8 +58,7 @@ String kPlayStoreURL =
 String kAppStoreURL =
     'https://apps.apple.com/us/app/gst-now-simple-gst-calculator/id1579338419';
 
-String shareAppData =
-    'Download GST Now - The simplest GST calculator app with CGST, SGST & IGST breakup!⚡'
+String shareAppData = 'Download GST Now - The simplest GST calculator app⚡'
     '\n\nAndroid\n$kPlayStoreURL'
     '\n\niOS & macOS\n$kAppStoreURL';
 

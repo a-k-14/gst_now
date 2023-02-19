@@ -19,7 +19,7 @@ Future<bool> createPDF(
   // We create a PDF object to create PDF
   final pdfGSTDataTable = pw.Document(author: 'GST Now/ar');
 
-  PdfColor mainColor = PdfColor.fromInt(0xff0050ab);
+  PdfColor mainColor = const PdfColor.fromInt(0xff0050ab);
 
   // To avoid error on iOS when using ' like in I'm or don't
   var fontData = await rootBundle.load("assets/fonts/Roboto-Regular.ttf");
@@ -32,10 +32,10 @@ Future<bool> createPDF(
     pw.Widget gstDataTable() {
       // Constants to be used in table for customizations
       pw.TextStyle gstAmountDetailsStyle =
-          pw.TextStyle(fontSize: 9, color: PdfColors.grey700);
+          const pw.TextStyle(fontSize: 9, color: PdfColors.grey700);
       pw.TextStyle totalTextStyle = pw.TextStyle(
           color: mainColor, fontWeight: pw.FontWeight.bold, fontSize: 11);
-      pw.TextStyle rowTextStyle = pw.TextStyle(fontSize: 11);
+      pw.TextStyle rowTextStyle = const pw.TextStyle(fontSize: 11);
 
       // To generate the GST Amount & CGST & SGST/IGST amount displays
       pw.Widget gstAmount(int index) {
@@ -79,7 +79,7 @@ Future<bool> createPDF(
             // Probably that the columns are going beyond 1 page
             pw.Expanded(
               child: pw.Container(
-                constraints: pw.BoxConstraints(
+                constraints: const pw.BoxConstraints(
                   maxWidth: 150,
                 ),
                 child: pw.Text(
@@ -115,7 +115,7 @@ Future<bool> createPDF(
             style: totalTextStyle,
           ),
           pw.Text(
-            '${totals.tAmountString(1)}',
+            totals.tAmountString(1),
             style: totalTextStyle,
           ),
           pw.Text(''),
@@ -150,7 +150,7 @@ Future<bool> createPDF(
             ],
           ),
           pw.Text(
-            '${totals.tAmountString(5)}',
+            totals.tAmountString(5),
             style: totalTextStyle,
           ),
         ],
@@ -168,7 +168,7 @@ Future<bool> createPDF(
         ],
         // Rows of the table
         data: tableRows,
-        border: pw.TableBorder(
+        border: const pw.TableBorder(
           horizontalInside: pw.BorderSide(
             color: PdfColors.grey200,
             width: 1,
@@ -187,11 +187,11 @@ Future<bool> createPDF(
           // // 3: pw.FlexColumnWidth(1),
           // 4: pw.FlexColumnWidth(2),
           // 5: pw.FlexColumnWidth(1),
-          0: pw.IntrinsicColumnWidth(),
-          1: pw.IntrinsicColumnWidth(),
-          2: pw.IntrinsicColumnWidth(),
-          4: pw.IntrinsicColumnWidth(),
-          5: pw.IntrinsicColumnWidth(),
+          0: const pw.IntrinsicColumnWidth(),
+          1: const pw.IntrinsicColumnWidth(),
+          2: const pw.IntrinsicColumnWidth(),
+          4: const pw.IntrinsicColumnWidth(),
+          5: const pw.IntrinsicColumnWidth(),
         },
         headerAlignments: {
           0: pw.Alignment.center,
@@ -216,7 +216,7 @@ Future<bool> createPDF(
     //---------------------------------------------------------------
     _myPageTheme(PdfPageFormat format) {
       return pw.PageTheme(
-        margin: pw.EdgeInsets.all(0),
+        margin: const pw.EdgeInsets.all(0),
         pageFormat: format.applyMargin(
             left: 0 * PdfPageFormat.cm,
             top: 0 * PdfPageFormat.cm,
@@ -281,7 +281,7 @@ Future<bool> createPDF(
         pageTheme: _myPageTheme(PdfPageFormat.a4),
         header: (context) {
           return pw.Container(
-            margin: pw.EdgeInsets.fromLTRB(52, 80, 52, 0),
+            margin: const pw.EdgeInsets.fromLTRB(52, 80, 52, 0),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -300,7 +300,8 @@ Future<bool> createPDF(
         build: (pw.Context context) {
           return [
             pw.Container(
-              margin: pw.EdgeInsets.symmetric(horizontal: 52, vertical: 5),
+              margin:
+                  const pw.EdgeInsets.symmetric(horizontal: 52, vertical: 5),
               child: gstDataTable(),
             ),
             // test(),
@@ -318,7 +319,7 @@ Future<bool> createPDF(
                 pw.Divider(color: mainColor),
                 pw.Text(
                   'via GST Now - The simplest GST calculator app with CGST, SGST & IGST breakup',
-                  style: pw.TextStyle(
+                  style: const pw.TextStyle(
                     color: PdfColors.blueGrey300,
                     fontSize: 12,
                   ),
@@ -330,25 +331,25 @@ Future<bool> createPDF(
                     pw.UrlLink(
                       child: pw.Text(
                         'Available here for Android',
-                        style: pw.TextStyle(
+                        style: const pw.TextStyle(
                           decoration: pw.TextDecoration.underline,
                           color: PdfColors.blueGrey300,
                           // fontSize: 10,
                         ),
                       ),
-                      destination: '$kPlayStoreURL',
+                      destination: kPlayStoreURL,
                     ),
                     pw.SizedBox(width: 20),
                     pw.UrlLink(
                       child: pw.Text(
                         'Available here for iOS & macOS',
-                        style: pw.TextStyle(
+                        style: const pw.TextStyle(
                           decoration: pw.TextDecoration.underline,
                           color: PdfColors.blueGrey300,
                           // fontSize: 10,
                         ),
                       ),
-                      destination: '$kAppStoreURL',
+                      destination: kAppStoreURL,
                     ),
                   ],
                 ),
@@ -376,7 +377,7 @@ Future<bool> createPDF(
     await OpenFile.open(pdfFile.path);
     result = true;
   } catch (e) {
-    print(e);
+    // print(e);
     result = false;
   }
   return result;

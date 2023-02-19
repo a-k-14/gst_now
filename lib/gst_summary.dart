@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'pdfGeneration.dart';
 import 'constants.dart';
@@ -56,7 +56,7 @@ Widget gstSummary({
       child: Row(
         children: [
           // Title to occupy 2/3rd space
-          Expanded(child: title, flex: 2),
+          Expanded(flex: 2, child: title),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -76,7 +76,7 @@ Widget gstSummary({
         style: kGSTSummaryBreakupTextStyle,
       ),
       Container(
-        margin: EdgeInsets.only(top: 3, bottom: 3),
+        margin: const EdgeInsets.only(top: 3, bottom: 3),
         color: kGSTSummaryRowBackground1,
         height: 1,
         width: 90,
@@ -115,7 +115,7 @@ Widget gstSummary({
         label: 'Ok',
         onPressed: () {},
       ),
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -158,9 +158,9 @@ Widget gstSummary({
                 style: kGSTSummaryRowTextStyle2,
               ),
               color: kGSTSummaryRowBackground2,
-              borderRadius: BorderRadius.only(),
+              borderRadius: const BorderRadius.only(),
               // This row has a different padding to accommodate the CGST&SGST section
-              padding: EdgeInsets.fromLTRB(12, 8, 12, 4),
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
             ),
             // We use row and empty 2nd container to get color next to CGST&SGST
             Row(
@@ -168,7 +168,7 @@ Widget gstSummary({
                 Container(
                   height: 55,
                   width: 200,
-                  padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
+                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
                   color: kGSTSummaryRowBackground2,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -222,9 +222,10 @@ Widget gstSummary({
           decoration: InputDecoration(
             // Dense only if large screen (width > 600)
             isDense: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
             labelText: 'Description',
-            enabledBorder: OutlineInputBorder(
+            enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                 // TODO: Cannot use Colors.grey[350] or Colors.grey.shade350
                 color: Color(0xffD6D6D6),
@@ -234,10 +235,10 @@ Widget gstSummary({
               borderSide: BorderSide(color: kMainColor),
             ),
             suffixIcon: detailsController.text.isEmpty
-                ? Text('')
+                ? const Text('')
                 : IconButton(
                     splashRadius: 20,
-                    icon: Icon(Icons.clear_rounded, size: 18),
+                    icon: const Icon(Icons.clear_rounded, size: 18),
                     color: kMainColor,
                     onPressed: () {
                       detailsController.clear();
@@ -256,7 +257,7 @@ Widget gstSummary({
               margin: kTextButtonContainerMargin,
               height: kTextButtonContainerHeight,
               child: TextButton(
-                style: TextButton.styleFrom(primary: kMainColor),
+                style: TextButton.styleFrom(foregroundColor: kMainColor),
                 onPressed: () {
                   // To stop empty row addition
                   if (baseAmount.isEmpty || gstRate.isEmpty) {
@@ -278,18 +279,18 @@ Widget gstSummary({
                     // To show 'Added' SnackBar after adding the row to the list/GST DataTable
                     SnackBar snackBar = SnackBar(
                       content: Container(
-                        child: Text('Added', textAlign: TextAlign.center),
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                           color: Colors.grey[700],
                         ),
+                        child: const Text('Added', textAlign: TextAlign.center),
                       ),
                       backgroundColor: Colors.transparent,
                       behavior: SnackBarBehavior.floating,
                       width: 100,
                       elevation: 0,
-                      duration: Duration(milliseconds: 800),
+                      duration: const Duration(milliseconds: 800),
                       // padding: EdgeInsets.all(0),
                     );
                     // We added .closed.then... to avoid showing SnackBar multiple times when we click 'Add to List' button multiple times very quickly
@@ -301,14 +302,14 @@ Widget gstSummary({
                   }
                   FocusScope.of(context).unfocus();
                 },
-                child: Text('Add to List'),
+                child: const Text('Add to List'),
               ),
             ),
             Container(
               margin: kTextButtonContainerMargin,
               height: kTextButtonContainerHeight,
               child: TextButton(
-                style: TextButton.styleFrom(primary: kMainColor),
+                style: TextButton.styleFrom(foregroundColor: kMainColor),
                 onPressed: () {
                   String gstBreakup = gstBreakupOperator == 'IGST'
                       ? 'IGST @ $igstRate% = $igstAmount'
@@ -331,7 +332,7 @@ Widget gstSummary({
                     share(shareData: calculationResult);
                   }
                 },
-                child: Text('Share'),
+                child: const Text('Share'),
               ),
             ),
           ],
@@ -354,13 +355,14 @@ class GSTDataTable extends StatefulWidget {
   // To get the totals to be displayed in the Total row of GST DataTable
   final Totals totals;
 
-  GSTDataTable({
+  const GSTDataTable({
+    Key? key,
     required this.gstCalcItemsList,
     required this.clearList,
     required this.removeSelectedRows,
     required this.updateDetails,
     required this.totals,
-  });
+  }) : super(key: key);
 
   @override
   _GSTDataTableState createState() => _GSTDataTableState(
@@ -458,7 +460,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
                                 ? 0
                                 : 100),
                         child: AlertDialog(
-                          title: Text('Edit Details'),
+                          title: const Text('Edit Details'),
                           content: TextField(
                             controller: newDetailsController,
                             textCapitalization: TextCapitalization.sentences,
@@ -482,12 +484,13 @@ class _GSTDataTableState extends State<GSTDataTable> {
                                 onPressed: () {
                                   newDetailsController.clear();
                                 },
-                                style:
-                                    TextButton.styleFrom(primary: kMainColor),
-                                child: Text('Clear')),
+                                style: TextButton.styleFrom(
+                                    foregroundColor: kMainColor),
+                                child: const Text('Clear')),
                             TextButton(
-                              style: TextButton.styleFrom(primary: kMainColor),
-                              child: Text('Done'),
+                              style: TextButton.styleFrom(
+                                  foregroundColor: kMainColor),
+                              child: const Text('Done'),
                               onPressed: () {
                                 // To update the new details in the row
                                 updateDetails(index, newDetailsController.text);
@@ -508,24 +511,24 @@ class _GSTDataTableState extends State<GSTDataTable> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(gstCalcItemsList[index].gstAmount ?? ''),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         // To check for CGST&SGST/IGST and display accordingly
                         gstCalcItemsList[index].gstBreakupOperator == 'IGST'
                             ? Text(
                                 'IGST: ${gstCalcItemsList[index].gstAmount ?? ''}',
-                                style:
-                                    TextStyle(fontSize: 10, color: Colors.grey),
+                                style: const TextStyle(
+                                    fontSize: 10, color: Colors.grey),
                               )
                             : Column(
                                 children: [
                                   Text(
                                     'CGST: ${gstCalcItemsList[index].csgstAmount ?? ''}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 10, color: Colors.grey),
                                   ),
                                   Text(
                                     'SGST: ${gstCalcItemsList[index].csgstAmount ?? ''}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 10, color: Colors.grey),
                                   ),
                                 ],
@@ -547,54 +550,62 @@ class _GSTDataTableState extends State<GSTDataTable> {
     // 5 - tTotalAmount
     rowsList.insert(
         0,
-        DataRow(color: MaterialStateProperty.all(Color(0x1AC1C1C1)), cells: [
-          DataCell(Text('')),
-          DataCell(Text(
-            'Total',
-            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
-          )),
-          DataCell(Text(
-            totals.tAmountString(1),
-            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
-          )),
-          DataCell(Text('')),
-          DataCell(
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    totals.tAmountString(2),
-                    style: TextStyle(
-                        color: kMainColor, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(height: 4),
-                  // To check for CGST&SGST/IGST and display accordingly
-                  Column(
+        DataRow(
+            color: MaterialStateProperty.all(const Color(0x1AC1C1C1)),
+            cells: [
+              const DataCell(Text('')),
+              DataCell(Text(
+                'Total',
+                style:
+                    TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+              )),
+              DataCell(Text(
+                totals.tAmountString(1),
+                style:
+                    TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+              )),
+              const DataCell(Text('')),
+              DataCell(
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'CGST: ${totals.tAmountString(3)}',
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                        totals.tAmountString(2),
+                        style: TextStyle(
+                            color: kMainColor, fontWeight: FontWeight.w500),
                       ),
-                      Text(
-                        'SGST: ${totals.tAmountString(3)}',
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
-                      ),
-                      Text(
-                        'IGST: ${totals.tAmountString(4)}',
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      const SizedBox(height: 4),
+                      // To check for CGST&SGST/IGST and display accordingly
+                      Column(
+                        children: [
+                          Text(
+                            'CGST: ${totals.tAmountString(3)}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.grey),
+                          ),
+                          Text(
+                            'SGST: ${totals.tAmountString(3)}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.grey),
+                          ),
+                          Text(
+                            'IGST: ${totals.tAmountString(4)}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.grey),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          DataCell(Text(
-            totals.tAmountString(5),
-            style: TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
-          )),
-        ]));
+              DataCell(Text(
+                totals.tAmountString(5),
+                style:
+                    TextStyle(color: kMainColor, fontWeight: FontWeight.w500),
+              )),
+            ]));
 
     return rowsList;
   }
@@ -613,12 +624,12 @@ class _GSTDataTableState extends State<GSTDataTable> {
             children: [
               Text(
                 'List - ${gstCalcItemsList.length} items',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               // This button is to clear list & clear selected items from the list
               // It does 2 jobs - if selectedRows is empty then it clears list, else it clears selected items
               TextButton(
-                style: TextButton.styleFrom(primary: kMainColor),
+                style: TextButton.styleFrom(foregroundColor: kMainColor),
                 onPressed: () {
                   if (selectedRows.isEmpty) {
                     // To clear the list and reset the totals to 0
@@ -635,9 +646,9 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     totals.reset();
                     // We take the new gstCalcItemsList, i.e. the list with selectedRows removed
                     // We repeat the addToTotals button for each element of gstCalcItemsList
-                    gstCalcItemsList.forEach((element) {
+                    for (var element in gstCalcItemsList) {
                       totals.addToTotals(element);
-                    });
+                    }
                   }
                 },
                 child: Text(selectedRows.isEmpty
@@ -648,7 +659,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
           ),
         ),
         ConstrainedBox(
-          constraints: BoxConstraints(
+          constraints: const BoxConstraints(
             maxHeight: 430,
             //MediaQuery.of(context).size.height * 0.5,
             minHeight: 0,
@@ -665,7 +676,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
               borderRadius: BorderRadius.circular(kBorderRadius - 2),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x1A000000),
+                  color: const Color(0x1A000000),
                   // offset: Offset(0, 2),
                   blurRadius: kBorderRadius,
                   // spreadRadius: 2,
@@ -687,10 +698,10 @@ class _GSTDataTableState extends State<GSTDataTable> {
                     columnSpacing: 20, // default is 56
                     headingRowHeight: 42, // default is 56
                     headingRowColor:
-                        MaterialStateProperty.all(Color(0x1AC1C1C1)),
+                        MaterialStateProperty.all(const Color(0x1AC1C1C1)),
                     showCheckboxColumn: true,
                     horizontalMargin: 20,
-                    columns: [
+                    columns: const [
                       DataColumn(label: Text('No.')),
                       DataColumn(label: Text('Details')),
                       DataColumn(label: Text('Base Amount')),
@@ -713,9 +724,9 @@ class _GSTDataTableState extends State<GSTDataTable> {
             // We generate PDF by calling createPDF function and if there is any error in generating PDf we show SnackBar
             createPDF(gstCalcItemsList, totals).then((value) {
               if (value) {
-                print(value);
+                // print(value);
               } else {
-                print(value);
+                // print(value);
                 // To show SnackBar on error
                 SnackBar snackBar = SnackBar(
                   elevation: 0,
@@ -725,19 +736,19 @@ class _GSTDataTableState extends State<GSTDataTable> {
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(kBorderRadius)),
-                  content: Text('Error creating PDF. Please try again.'),
+                  content: const Text('Error creating PDF. Please try again.'),
                   action: SnackBarAction(
                     label: 'Ok',
                     onPressed: () {},
                   ),
-                  duration: Duration(seconds: 2),
+                  duration: const Duration(seconds: 2),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             });
           },
-          style: TextButton.styleFrom(primary: kMainColor),
-          child: Text('Share List'),
+          style: TextButton.styleFrom(foregroundColor: kMainColor),
+          child: const Text('Share List'),
         ),
       ],
     );

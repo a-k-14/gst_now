@@ -1,13 +1,17 @@
 import 'dart:io';
+// import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'custom_widgets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   // To set the scroll bar visibility
   final ScrollController scrollController = ScrollController();
+
+  AboutPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +20,7 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Help & About'),
+        title: const Text('Help & About'),
         actions: [
           IconButton(
             tooltip: 'Share App',
@@ -24,7 +28,7 @@ class AboutPage extends StatelessWidget {
             onPressed: () {
               share(shareData: shareAppData);
             },
-            icon: Icon(Icons.share_rounded),
+            icon: const Icon(Icons.share_rounded),
           ),
         ],
       ),
@@ -43,12 +47,12 @@ class AboutPage extends StatelessWidget {
               child: Container(
                 height: wideScreen ? 550 : 400,
                 decoration: BoxDecoration(
-                  color: Color(0xfffafafa),
+                  color: const Color(0xfffafafa),
                   borderRadius: BorderRadius.circular(kBorderRadius),
                   border: Border.all(color: Colors.grey.shade100),
                 ),
                 child: CupertinoScrollbar(
-                  isAlwaysShown: true,
+                  // isAlwaysShown: true,
                   controller: scrollController,
                   child: SingleChildScrollView(
                       controller: scrollController,
@@ -58,8 +62,8 @@ class AboutPage extends StatelessWidget {
                           Image.asset('images/help.png'),
                           SizedBox(
                             width: 2,
-                            child: Container(color: Colors.grey[200]),
                             height: 200,
+                            child: Container(color: Colors.grey[200]),
                           ),
                           Image.asset('images/help2.png'),
                         ],
@@ -67,67 +71,68 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(height: 30),
+            const Divider(height: 30),
             Text(
               'About',
               style: TextStyle(fontSize: 18, color: kMainColor),
             ),
             SizedBox(height: kSizedBoxHeight),
             Text(
-              '👋 I am Akshay - A Chartered Accountant by profession & a technology enthusiast by passion. '
-              'In my pursuit to make complex FAT (Finance, Accounting, & Taxation) concepts & tasks simple & easy with the help of technology, I\'ve started with this simplest GST Calculator.',
+              '👋 I am Akshay - developer of this app. I\'m a Chartered Accountant by profession & a developer by passion. ',
               style: aboutPageTextStyle,
             ),
-            SizedBox(height: kSizedBoxHeight - 5),
+            // const Divider(),
             Wrap(
               children: [
                 Text(
-                  'GST Now is made with Flutter',
+                  'If you have any feedback, please drop a message:',
                   style: aboutPageTextStyle,
                 ),
-                FlutterLogo(),
-                // The following check is to avoid copyright issues from apple
-                Platform.isIOS || Platform.isMacOS
-                    ? Text(
-                        'with ~2200 lines of code, and is available across operating systems & devices including iPhone, iPad, iPod, & macOS.',
-                        style: aboutPageTextStyle,
-                      )
-                    : Text(
-                        'with ~2200 lines of code, and is available for Android, iOS (iPhone, iPad, iPod), & macOS.',
-                        style: aboutPageTextStyle,
-                      ),
-                GestureDetector(
-                  child: Text(
-                    'Download here',
-                    style: aboutPageTextStyle.copyWith(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
+                ActionChip(
+                  label: const Text('Email'),
+                  avatar: Icon(
+                    Icons.email_rounded,
+                    color: kMainColor,
+                    size: 18,
                   ),
-                  onTap: () {
-                    launchURL(url: 'https://curiobeing.github.io/GSTNow.app/');
+                  backgroundColor: const Color(0xffcce4ff),
+                  // here we use url launcher separately instead of using launchURL from custom_widgets.dart (as used for share, app store links) as we have to use try and catch for mailto and not canLaunchUrl, which is only for http/https
+                  onPressed: () async {
+                    try {
+                      await launchUrl(Uri(
+                        scheme: 'mailto',
+                        path: 'unitedbyc@gmail.com',
+                        query: 'subject=App Feedback',
+                      ));
+                    } catch (e) {
+                      throw '!Error!: ${e.toString()}';
+                    }
                   },
-                ),
-                Text(
-                  ' for other platforms.',
-                  style: aboutPageTextStyle,
                 ),
               ],
             ),
-            SizedBox(height: kSizedBoxHeight - 5),
-            Divider(),
+            const Divider(),
             SizedBox(height: kSizedBoxHeight - 5),
             Text(
-              'Don\'t forget to review⭐ the app👇',
+              'Don\'t forget to review⭐ the app',
               style: aboutPageTextStyle,
             ),
             Row(
               children: [
                 Platform.isIOS || Platform.isMacOS
-                    ? Text('')
+                    ? TextButton(
+                        onPressed: () {
+                          launchURL(url: Uri.parse(kAppStoreURL));
+                        },
+                        child: Image.asset(
+                          'images/appStore.png',
+                          height: 35,
+                          // fit: BoxFit.cover,
+                        ),
+                      )
                     : TextButton(
                         onPressed: () {
-                          launchURL(url: kPlayStoreURL);
+                          launchURL(url: Uri.parse(kPlayStoreURL));
                         },
                         child: Image.asset(
                           'images/playStore.png',
@@ -135,56 +140,6 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                 // Added this SizedBox so that the 2 TextButtons have some space on browser
-                SizedBox(width: 5),
-                TextButton(
-                  onPressed: () {
-                    launchURL(url: kAppStoreURL);
-                  },
-                  child: Image.asset(
-                    'images/appStore.png',
-                    height: 35,
-                    // fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
-            Divider(),
-            SizedBox(height: kSizedBoxHeight - 5),
-            Wrap(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    share(shareData: shareAppData);
-                  },
-                  child: Text(
-                    'Spread the word',
-                    style: aboutPageTextStyle.copyWith(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-                Text(
-                  'and if you have any feedback or want to say 👋, we can catch up on ',
-                  style: aboutPageTextStyle,
-                ),
-                ActionChip(
-                  label: Text('Twitter'),
-                  avatar: Image.asset('images/twitter.png'),
-                  backgroundColor: Color(0xffcce4ff),
-                  onPressed: () {
-                    launchURL(url: 'https://twitter.com/ar36t');
-                  },
-                ),
-                SizedBox(width: kSizedBoxHeight),
-                ActionChip(
-                  label: Text('Telegram'),
-                  avatar: Image.asset('images/telegram.png'),
-                  backgroundColor: Color(0xffcce4ff),
-                  onPressed: () {
-                    launchURL(url: 'https://t.me/gstNow');
-                  },
-                ),
               ],
             ),
           ],
