@@ -46,7 +46,6 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   }
 
   // To store the edited gst rates list to be used when app is opened next time
-  // This is called everytime the swap icon button below GST Rates buttons is clicked
   void _setGstRatesList() async {
     // Instance of SharedPreference
     final prefs = await SharedPreferences.getInstance();
@@ -61,11 +60,15 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
   void _loadGstRatesList() async {
     // Instance of SharedPreference
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      // Get GST rates list which is stored as list of strings, and then convert that to double
-      gstRatesList =
-          prefs.getStringList('items')!.map((e) => double.parse(e)).toList();
-    });
+    // print('!ERROR!${prefs.getStringList('items')}');
+    if (prefs.getStringList('items') != null) {
+      setState(() {
+        // Get GST rates list which is stored as list of strings, and then convert that to double
+        gstRatesList =
+            prefs.getStringList('items')!.map((e) => double.parse(e)).toList();
+      });
+    }
+    // print(prefs.getStringList('items'));
   }
 
   // We use this to reset GST rates to default
