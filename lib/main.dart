@@ -54,11 +54,16 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   final String title; // To be used in App Bar
 
   const Home({Key? key, required this.title}) : super(key: key);
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -79,8 +84,13 @@ class Home extends StatelessWidget {
         bottom: false,
         child: Scaffold(
           appBar: AppBar(
-            title: Text(title),
+            title: Text(widget.title),
             actions: [
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(right: 10),
+                child: const Dropdown(),
+              ),
               IconButton(
                 tooltip: 'Help & About',
                 onPressed: () {
@@ -106,6 +116,52 @@ class Home extends StatelessWidget {
           body: const GSTCalculatorPage(),
         ),
       ),
+    );
+  }
+}
+
+class Dropdown extends StatefulWidget {
+  const Dropdown({Key? key}) : super(key: key);
+
+  @override
+  State<Dropdown> createState() => _DropdownState();
+}
+
+class _DropdownState extends State<Dropdown> {
+  // This is to set the default dropdown value and also to assign new dropdown value on selection
+  int dropdownValue = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    // We edited dropdown.dart to ensure dropdown opens below spinner
+    // final double selectedItemOffset = -40 instead of getItemOffset(index);
+    return DropdownButton(
+      onChanged: (int? selectedValue) {
+        setState(() {
+          dropdownValue = selectedValue!;
+        });
+      },
+      value: dropdownValue,
+      icon: Icon(
+        Icons.keyboard_arrow_down_outlined,
+        color: Colors.grey[350],
+        size: 20,
+      ),
+      style: TextStyle(color: kAppBarContentColor),
+      underline: Container(),
+      dropdownColor: const Color(0xff004694),
+      borderRadius: BorderRadius.circular(kGSTSummaryBorderRadius),
+      elevation: 4,
+      items: const [
+        DropdownMenuItem(
+          value: 1,
+          child: Text('India'),
+        ),
+        DropdownMenuItem(
+          value: 2,
+          child: Text('Other'),
+        ),
+      ],
     );
   }
 }
