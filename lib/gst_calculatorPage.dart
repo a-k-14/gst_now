@@ -79,6 +79,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
       // print(gstRatesList);
     });
     _setGstRatesList();
+    if (isGSTRatesListReverse) {_setIsReversedValue();}
   }
 
   // To set the sort icon color

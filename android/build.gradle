@@ -1,22 +1,23 @@
-buildscript {
-    // This was 1.3.50 but changed to 1.5.21 as there was highlight in dependencies saying:
-    // Kotlin version that is used for building with Gradle (1.3.50) differs from the one bundled into the IDE plugin (1.5.21)
-    ext.kotlin_version = '1.8.10'
-    repositories {
-        google()
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
+//buildscript {
+//    // This was 1.3.50 but changed to 1.5.21 as there was highlight in dependencies saying:
+//    // Kotlin version that is used for building with Gradle (1.3.50) differs from the one bundled into the IDE plugin (1.5.21)
+//    ext.kotlin_version = '1.8.10'
+//    repositories {
+//        google()
+//        jcenter()
+//    }
+//
+//    dependencies {
+//        classpath 'com.android.tools.build:gradle:4.1.0'
+//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+//    }
+//}
 
 allprojects {
     repositories {
         google()
-        jcenter()
+//        jcenter()
+        mavenCentral()
     }
 }
 
@@ -25,9 +26,19 @@ subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
+    }
     project.evaluationDependsOn(':app')
+
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

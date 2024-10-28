@@ -81,9 +81,11 @@ Widget gstSummary({
         height: 1,
         width: 90,
       ),
-      Text(
-        'SGST @ $csgstRate% = $csgstAmount',
-        style: kGSTSummaryBreakupTextStyle,
+      Expanded(
+        child: Text(
+          'SGST @ $csgstRate% = $csgstAmount',
+          style: kGSTSummaryBreakupTextStyle,
+        ),
       ),
     ],
   );
@@ -166,7 +168,7 @@ Widget gstSummary({
             Row(
               children: [
                 Container(
-                  height: 55,
+                  height: 60,
                   width: 200,
                   padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
                   color: kGSTSummaryRowBackground2,
@@ -551,7 +553,7 @@ class _GSTDataTableState extends State<GSTDataTable> {
     rowsList.insert(
         0,
         DataRow(
-            color: MaterialStateProperty.all(const Color(0x1AC1C1C1)),
+            color: WidgetStateProperty.all(const Color(0x1AC1C1C1)),
             cells: [
               const DataCell(Text('')),
               DataCell(Text(
@@ -694,11 +696,11 @@ class _GSTDataTableState extends State<GSTDataTable> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
-                    dataRowHeight: 58, // default is 48
+                    dataRowMaxHeight: 75, // default is 48
                     columnSpacing: 20, // default is 56
                     headingRowHeight: 42, // default is 56
                     headingRowColor:
-                        MaterialStateProperty.all(const Color(0x1AC1C1C1)),
+                        WidgetStateProperty.all(const Color(0x1AC1C1C1)),
                     showCheckboxColumn: true,
                     horizontalMargin: 20,
                     columns: const [

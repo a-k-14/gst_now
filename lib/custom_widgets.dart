@@ -416,6 +416,8 @@ class EditRates extends StatelessWidget {
                         onPressed: () {
                           resetGstRatesList();
                           Navigator.of(context).pop();
+                          // to avoid keyboard opening and focusing in description field
+                          FocusScope.of(context).unfocus();
                         },
                         style:
                             TextButton.styleFrom(foregroundColor: kMainColor),
@@ -430,6 +432,8 @@ class EditRates extends StatelessWidget {
                         // updateRate(
                         //     1, double.parse(getRateOptionController.text));
                         Navigator.of(context).pop();
+                        // to avoid keyboard opening and focusing in description field
+                        FocusScope.of(context).unfocus();
                       },
                     ),
                   ],
