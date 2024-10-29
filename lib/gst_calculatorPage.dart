@@ -373,11 +373,26 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
               ],
             ),
           ),
-          GSTOperatorTab(
-            operatorValues: const ['+ Add GST', '- Less GST'],
-            wideScreen: wideScreen,
-            f: updateGSTOperator,
+          Row(
+            children: [
+              Expanded(
+                child: GSTOperatorTab(
+                  operatorValues: const ['+ GST', '- GST'],
+                  wideScreen: wideScreen,
+                  f: updateGSTOperator,
+                ),
+              ),
+              SizedBox(width: kSizedBoxHeight),
+              Expanded(
+                child: GSTOperatorTab(
+                  operatorValues: const ['C&S GST', 'IGST'],
+                  wideScreen: wideScreen,
+                  f: updateGSTBreakupOperator,
+                ),
+              ),
+            ],
           ),
+
           SizedBox(height: kSizedBoxHeight - 2),
           gstSummary(
             gstCalculatorBrain: _gstCalculatorBrain,
@@ -389,11 +404,7 @@ class _GSTCalculatorPageState extends State<GSTCalculatorPage> {
             f: updateGSTBreakupOperator,
           ),
           // SizedBox(height: kSizedBoxHeight),
-          GSTOperatorTab(
-            operatorValues: const ['CGST & SGST', 'IGST'],
-            wideScreen: wideScreen,
-            f: updateGSTBreakupOperator,
-          ),
+
           GSTDataTable(
             gstCalcItemsList: gstCalcItem.gstCalcList,
             clearList: clearGSTCalcList,

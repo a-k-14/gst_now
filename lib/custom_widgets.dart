@@ -146,9 +146,10 @@ class _GSTOperatorTabState extends State<GSTOperatorTab> {
   Widget build(BuildContext context) {
     return Container(
       // Container is to enforce width
-      width:
-          MediaQuery.of(context).size.width * (widget.wideScreen ? 0.5 : 0.93),
-      // Edited const double _kMinSegmentedControlHeight = 40.0; default value is - 28.0 in the default files
+      // width:
+          // MediaQuery.of(context).size.width * (widget.wideScreen ? 0.5 : 0.93),
+      // Edited const double _kMinSegmentedControlHeight = 30.0; default value is - 28.0 in the default files
+      // Edited const double _kSegmentMinPadding = 7.25; default value is 9.25
       child: CupertinoSlidingSegmentedControl(
         groupValue: segmentedControlGroupValue,
         // We are using children directly here instead of creating a variable as
@@ -176,39 +177,34 @@ class GSTTip extends StatefulWidget {
 
   @override
   _GSTTipState createState() => _GSTTipState();
+
+
+
 }
 
 class _GSTTipState extends State<GSTTip> {
-  bool _isExpanded = false;
+
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionPanelList(
-      expansionCallback: (i, isExpanded) {
-        setState(() {
-          _isExpanded = !isExpanded;
-        });
-      },
-      elevation: 0,
-      children: [
-        ExpansionPanel(
-          headerBuilder: (_, isExpanded) {
-            return Container(
-              padding: EdgeInsets.only(left: kPadding),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "When to use CGST&SGST vs IGST?",
-                style: TextStyle(color: Colors.grey),
-              ),
-            );
-          },
-          body: gstTipTable(),
-          isExpanded: _isExpanded,
-          canTapOnHeader: true,
-        )
-      ],
+    return Column(
+        children: <Widget>[ ExpansionTile(
+      collapsedBackgroundColor: const Color(0xfff9f9f9),
+      collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kBorderRadius)),
+      shape: RoundedRectangleBorder(side: BorderSide(color: Colors.transparent)),
+      title: const Text(
+        "When to use CGST&SGST vs IGST?",
+        style: TextStyle(color: Colors.black45),
+      ),
+      children: <Widget>[
+        gstTipTable(),
+      ],),
+
+        ],
     );
   }
+
+
 
   // To build the Tip table
   Widget gstTipTable() {
@@ -283,7 +279,7 @@ class _GSTTipState extends State<GSTTip> {
         ),
         // This is placed with the tip table so that it will not stick out in the home screen
         Text(
-          '\nMade with Flutter 💙 | ar',
+          '\nMade with Flutter 💙 | akshay',
           textAlign: TextAlign.center,
           style: kGSTSummaryBreakupTextStyle,
         ),
@@ -365,6 +361,7 @@ class EditRates extends StatelessWidget {
                         ? 0
                         : 100),
                 child: AlertDialog(
+                  backgroundColor: Colors.white,
                   title: const Text('Edit GST Rates'),
                   content: Column(
                     children: [

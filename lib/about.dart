@@ -35,7 +35,7 @@ class AboutPage extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.all(kPadding + 5),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               'Thank you for checking the app. Here is a quick guide ℹ\n',
@@ -71,56 +71,76 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(height: 30),
-            Text(
-              'About',
-              style: TextStyle(fontSize: 18, color: kMainColor),
-            ),
-            SizedBox(height: kSizedBoxHeight),
-            Text(
-              '👋 I am Akshay - developer of this app. I\'m a Chartered Accountant by profession & a developer by passion. ',
-              style: aboutPageTextStyle,
-            ),
-            // const Divider(),
-            Wrap(
-              children: [
-                Text(
-                  'If you have any feedback, please drop a message:',
-                  style: aboutPageTextStyle,
-                ),
-                ActionChip(
-                  label: const Text('Email'),
-                  avatar: Icon(
-                    Icons.email_rounded,
-                    color: kMainColor,
-                    size: 18,
+            const SizedBox(height: 15),
+            Container(
+              padding: EdgeInsets.all(kPadding),
+              decoration: BoxDecoration(
+                color: const Color(0xffd6f1ff),
+                borderRadius: BorderRadius.circular(kBorderRadius)
+              ),
+              child: Wrap(
+                children: [
+                  const Text(
+                    'If you have any feedback, please drop a message:',
+                    style: TextStyle(
+                      wordSpacing: 0.5,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      height: 1.25,
+                      color: Color(0xff0062cf),
+                    ),
                   ),
-                  backgroundColor: const Color(0xffcce4ff),
-                  // here we use url launcher separately instead of using launchURL from custom_widgets.dart (as used for share, app store links) as we have to use try and catch for mailto and not canLaunchUrl, which is only for http/https
-                  onPressed: () async {
-                    try {
-                      await launchUrl(Uri(
-                        scheme: 'mailto',
-                        path: 'unitedbyc@gmail.com',
-                        query: 'subject=App Feedback',
-                      ));
-                    } catch (e) {
-                      throw '!Error!: ${e.toString()}';
-                    }
-                  },
-                ),
-              ],
+                  ActionChip(
+                    side: const BorderSide(width: 0.2),
+                    label: const Text('Email', style: TextStyle(color: Color(
+                        0xff0062cf)),),
+                    avatar: const Icon(
+                      Icons.email_rounded,
+                      color: Color(0xff0062cf),
+                      size: 18,
+                    ),
+                    backgroundColor: const Color(0xffd6f1ff),
+
+                    // here we use url launcher separately instead of using launchURL from custom_widgets.dart (as used for share, app store links) as we have to use try and catch for mailto and not canLaunchUrl, which is only for http/https
+                    onPressed: () async {
+                      try {
+                        await launchUrl(Uri(
+                          scheme: 'mailto',
+                          path: 'unitedbyc@gmail.com',
+                          query: 'subject=App Feedback',
+                        ));
+                      } catch (e) {
+                        throw '!Error!: ${e.toString()}';
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-            const Divider(),
+            const SizedBox(height: 15),
             SizedBox(height: kSizedBoxHeight - 5),
-            Text(
-              'Don\'t forget to review⭐ the app',
-              style: aboutPageTextStyle,
-            ),
-            Row(
-              children: [
-                Platform.isIOS || Platform.isMacOS
-                    ? TextButton(
+            Container(
+              padding: EdgeInsets.all(kPadding),
+              decoration: BoxDecoration(
+                  color: const Color(0xfffff1e0),
+                  borderRadius: BorderRadius.circular(kBorderRadius)
+              ),
+              child: Wrap(
+                children: [
+                  const Text(
+                    'Rate us⭐ on the Playstore',
+                    style: TextStyle(
+                      wordSpacing: 0.5,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      height: 1.25,
+                      color: Color(0xffb86d14),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Platform.isIOS || Platform.isMacOS
+                          ? TextButton(
                         onPressed: () {
                           launchURL(url: Uri.parse(kAppStoreURL));
                         },
@@ -130,7 +150,7 @@ class AboutPage extends StatelessWidget {
                           // fit: BoxFit.cover,
                         ),
                       )
-                    : TextButton(
+                          : TextButton(
                         onPressed: () {
                           launchURL(url: Uri.parse(kPlayStoreURL));
                         },
@@ -139,8 +159,33 @@ class AboutPage extends StatelessWidget {
                           height: 35,
                         ),
                       ),
-                // Added this SizedBox so that the 2 TextButtons have some space on browser
-              ],
+                      // Added this SizedBox so that the 2 TextButtons have some space on browser
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+            Container(
+              // padding: EdgeInsets.all(kPadding),
+              padding: EdgeInsets.all(kPadding),
+              decoration: BoxDecoration(
+                  color: const Color(0xfff3f5f7),
+                  borderRadius: BorderRadius.circular(kBorderRadius)
+              ),
+              child: const Text(
+                  'Made with Flutter 💙 | akshay',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    wordSpacing: 0.5,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                    color: Colors.black54,
+                  ),
+                
+                ),
+
             ),
           ],
         ),

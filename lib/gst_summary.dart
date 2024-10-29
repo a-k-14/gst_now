@@ -127,7 +127,8 @@ Widget gstSummary({
     children: [
       Container(
         margin:
-            EdgeInsets.only(left: kPadding, top: kPadding - 6, right: kPadding),
+        EdgeInsets.only(bottom: kPadding, top: kPadding),
+            // EdgeInsets.only(left: kPadding, top: kPadding - 6, right: kPadding),
         child: Column(
           children: [
             customSummaryRow(
